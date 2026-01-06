@@ -1,0 +1,240 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id             String        @id @default(uuid())
+  name           String
+  commercialName String?       @map("commercial_name")
+  logoUrl        String?       @map("logo_url")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  projects       Project[]
+  sites          Site[]
+  subscription   Subscription?
+  users          User[]
+  companies      Company[]
+
+  @@map("tenants")
+}
+
+model Company {
+  id          String    @id @default(uuid())
+  tenantId    String    @map("tenant_id")
+  name        String
+  contactName String?   @map("contact_name")
+  email       String?
+  phone       String?
+  address     String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  tenant      Tenant    @relation(fields: [tenantId], references: [id])
+  projects    Project[]
+
+  @@map("companies")
+}
+
+model Subscription {
+  id               String             @id @default(uuid())
+  tenantId         String             @unique @map("tenant_id")
+  mpSubscriptionId String?            @map("mp_subscription_id")
+  status           SubscriptionStatus @default(PENDING)
+  planType         String             @map("plan_type")
+  lastPaymentDate  DateTime?          @map("last_payment_date")
+  createdAt        DateTime           @default(now()) @map("created_at")
+  updatedAt        DateTime           @updatedAt @map("updated_at")
+  tenant           Tenant             @relation(fields: [tenantId], references: [id])
+
+  @@map("subscriptions")
+}
+
+model User {
+  id                  String     @id @default(uuid())
+  tenantId            String     @map("tenant_id")
+  email               String     @unique
+  passwordHash        String?    @map("password_hash")
+  fullName            String     @map("full_name")
+  role                UserRole   @default(COLLABORATOR)
+  status              UserStatus @default(ACTIVE)
+  resetToken          String?    @unique @map("reset_token")
+  resetTokenExpires   DateTime?  @map("reset_token_expires")
+  professionalLicense String?    @map("professional_license")
+  createdAt           DateTime   @default(now()) @map("created_at")
+  updatedAt           DateTime   @updatedAt @map("updated_at")
+  assignedTasks       Task[]
+  tenant              Tenant     @relation(fields: [tenantId], references: [id])
+
+  @@map("users")
+}
+
+model Project {
+  id              String        @id @default(uuid())
+  tenantId        String        @map("tenant_id")
+  companyId       String?       @map("company_id")
+  name            String
+  standard        String?
+  location        String?
+  description     String?
+  projectContact  String?       @map("project_contact")
+  status          ProjectStatus @default(IN_PROGRESS)
+  progressPercent Float         @default(0.0) @map("progress_percent")
+  startDate       DateTime?     @map("start_date")
+  endDate         DateTime?     @map("end_date")
+  deadline        DateTime?
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+  tenant          Tenant        @relation(fields: [tenantId], references: [id])
+  company         Company?      @relation(fields: [companyId], references: [id])
+  reports         Report[]
+  modules         ProjectModule[]
+  tasks           Task[]
+
+  @@map("projects")
+}
+
+model ProjectModule {
+  id          String   @id @default(uuid())
+  projectId   String   @map("project_id")
+  name        String
+  description String?
+  orderIndex  Int      @default(0) @map("order_index")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tasks       Task[]
+
+  @@map("project_modules")
+}
+
+model Task {
+  id             String        @id @default(uuid())
+  projectId      String        @map("project_id")
+  moduleId       String?       @map("module_id")
+  assignedUserId String?       @map("assigned_user_id")
+  title          String
+  description    String?
+  type           TaskType      @default(STANDARD)
+  status         TaskStatus    @default(PENDING)
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  subtasks       Subtask[]
+  assignedUser   User?         @relation(fields: [assignedUserId], references: [id])
+  project        Project       @relation(fields: [projectId], references: [id])
+  module         ProjectModule? @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@map("tasks")
+}
+
+model Subtask {
+  id          String   @id @default(uuid())
+  taskId      String   @map("task_id")
+  title       String?  // Optional title if different from description or for "Type of subtask"
+  description String
+  isCompleted Boolean  @default(false) @map("is_completed")
+  evidenceUrl String?  @map("evidence_url")
+  comments    String?
+  type        String?  // E.g., 'DATA_COLLECTION', 'INVOICE', 'IMPROVEMENT', 'GENERAL'
+  data        Json?    // For flexible fields: { annualConsumption: 1000, investment: 5000, ... }
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  task        Task     @relation(fields: [taskId], references: [id])
+
+  @@map("subtasks")
+}
+
+model Report {
+  id            String   @id @default(uuid())
+  projectId     String   @map("project_id")
+  pdfUrl        String?  @map("pdf_url")
+  signingHash   String?  @map("signing_hash")
+  signatureData Json?    @map("signature_data")
+  createdAt     DateTime @default(now()) @map("created_at")
+  project       Project  @relation(fields: [projectId], references: [id])
+
+  @@map("reports")
+}
+
+model Site {
+  id           String         @id @default(uuid())
+  tenantId     String         @map("tenant_id")
+  name         String
+  address      String?
+  internalCode String?        @map("internal_code")
+  activityData ActivityData[]
+  tenant       Tenant         @relation(fields: [tenantId], references: [id])
+
+  @@map("sites")
+}
+
+model EmissionFactor {
+  id              String    @id @default(uuid())
+  source          String
+  type            String
+  factorValue     Float     @map("factor_value")
+  unitNumerator   String    @map("unit_numerator")
+  unitDenominator String    @map("unit_denominator")
+  validFrom       DateTime  @map("valid_from")
+  validTo         DateTime? @map("valid_to")
+
+  @@map("emission_factors")
+}
+
+model ActivityData {
+  id               String   @id @default(uuid())
+  siteId           String   @map("site_id")
+  periodStart      DateTime @map("period_start")
+  periodEnd        DateTime @map("period_end")
+  consumptionValue Float    @map("consumption_value")
+  originalUnit     String   @map("original_unit")
+  evidenceUrl      String?  @map("evidence_url")
+  metaData         Json?    @map("meta_data")
+  createdAt        DateTime @default(now()) @map("created_at")
+  site             Site     @relation(fields: [siteId], references: [id])
+
+  @@map("activity_data")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  AUDITOR
+  COLLABORATOR
+  CLIENT
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PENDING
+  SUSPENDED
+  CANCELLED
+}
+
+enum UserStatus {
+  ACTIVE
+  INVITED
+  SUSPENDED
+}
+
+enum ProjectStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETE
+  BLOCKED
+  ARCHIVED
+}
+
+enum TaskType {
+  STANDARD
+  MANDATORY
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETE
+}
