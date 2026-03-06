@@ -1,15 +1,30 @@
-import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import helmet from 'helmet';
+import { json, urlencoded } from 'express';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import { HttpAdapterHost } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
+  // Initialization of OpenTelemetry (assumes loaded via separate instrumentation file or pre-script)
   const app = await NestFactory.create(AppModule);
+
+  // Security & Middleware
+  app.use(helmet());
+  app.use(json({ limit: '50mb' }));
+  app.use(urlencoded({ extended: true, limit: '50mb' }));
+
   app.enableCors({
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+    origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ['http://localhost:5173', 'http://127.0.0.1:5173'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
+
+  app.setGlobalPrefix('api/v1');
+
+  // Input Validation
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -18,11 +33,14 @@ async function bootstrap() {
     }),
   );
 
+  // Global Error Handling
+  const httpAdapter = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
+
+  // Swagger Configuration
   const config = new DocumentBuilder()
-    .setTitle('Eficenza 360 API')
-    .setDescription(
-      'API de gestión para Eficenza 360 (Auditoría Energética & Huella de Carbono)',
-    )
+    .setTitle('Eficenza 360 Enterprise API')
+    .setDescription('Backend Platform API & Platform Services')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
@@ -30,6 +48,7 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document);
 
   await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
-  console.log(`Application is running on: ${await app.getUrl()}`);
+  console.log(`Eficenza Enterprise API is running on: ${await app.getUrl()}`);
 }
-bootstrap();
+
+void bootstrap();

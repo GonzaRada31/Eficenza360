@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useAuth } from '../context/auth.context';
+import { useAuth } from '../context/AuthContext';
 import { api } from '../lib/api';
 import { Activity, CheckCircle, AlertTriangle, ListFilter, ArrowRight } from 'lucide-react';
 
@@ -53,6 +53,17 @@ export const DashboardPage = () => {
                 <p className="text-gray-500 text-lg">
                     Bienvenido de nuevo, <span className="font-semibold text-gray-700">{user?.email}</span>.
                 </p>
+            </div>
+             
+             {/* Value Proposition / Methodology Context */}
+            <div className="bg-brand-primary/5 border border-brand-primary/10 rounded-xl p-6 text-center md:text-left">
+                <div className="max-w-4xl">
+                   <h3 className="text-lg font-semibold text-brand-primary mb-2">Metodología EFICENZA 360</h3>
+                   <p className="text-gray-600 leading-relaxed italic">
+                       "EFICENZA 360 es una metodología integral que acompaña a organizaciones en la gestión real de su energía, 
+                       huella de carbono y sostenibilidad, priorizando la reducción de impactos y el retorno económico antes de la compensación."
+                   </p>
+                </div>
             </div>
 
             {/* Stats Cards */}

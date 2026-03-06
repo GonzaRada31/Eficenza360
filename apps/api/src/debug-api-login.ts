@@ -14,7 +14,7 @@ async function main() {
     console.log(`Response Status: ${response.status}`);
 
     if (response.ok) {
-      const data = await response.json();
+      const data = (await response.json()) as { access_token?: string };
       console.log('✅ Login Successful!');
       console.log('Token received:', data.access_token ? 'Yes' : 'No');
     } else {
@@ -31,3 +31,5 @@ main().catch((error) => {
   console.error(error);
   process.exit(1);
 });
+
+export {};

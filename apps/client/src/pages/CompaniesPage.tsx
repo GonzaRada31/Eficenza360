@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/api';
 import { Plus, Building, Search, MoreHorizontal, User, MapPin, Phone, Mail } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 interface Company {
     id: string;
@@ -9,6 +10,8 @@ interface Company {
     email: string;
     phone: string;
     address: string;
+    organizationType?: string;
+    employeeCount?: string;
     createdAt: string;
 }
 
@@ -24,8 +27,19 @@ export const CompaniesPage = () => {
         contactName: '',
         email: '',
         phone: '',
-        address: ''
+        address: '',
+        organizationType: '',
+        employeeCount: ''
     });
+
+    const ORGANIZATION_TYPES = ['PyME', 'Industria', 'Minera', 'Proveedor minero', 'Municipio', 'Institución', 'Otro'];
+    const EMPLOYEE_COUNTS = ['1-10', '10-20', '20-50', 'Otro'];
+
+    // Custom input states
+    const [customOrgType, setCustomOrgType] = useState('');
+    const [customEmpCount, setCustomEmpCount] = useState('');
+    const [isCustomOrgType, setIsCustomOrgType] = useState(false);
+    const [isCustomEmpCount, setIsCustomEmpCount] = useState(false);
 
     useEffect(() => {
         fetchCompanies();
@@ -45,15 +59,22 @@ export const CompaniesPage = () => {
     const handleCreate = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await api.post('/companies', formData);
-            alert('Empresa creada exitosamente');
+            const payload = {
+                ...formData,
+                organizationType: isCustomOrgType ? customOrgType : formData.organizationType,
+                employeeCount: isCustomEmpCount ? customEmpCount : formData.employeeCount
+            };
+            await api.post('/companies', payload);
+            Swal.fire({ icon: 'success', title: 'Empresa creada exitosamente', showConfirmButton: false, timer: 1500 });
             setShowModal(false);
-            setFormData({ name: '', contactName: '', email: '', phone: '', address: '' });
+            setFormData({ name: '', contactName: '', email: '', phone: '', address: '', organizationType: '', employeeCount: '' });
+            setCustomOrgType('');
+            setCustomEmpCount('');
             fetchCompanies();
         } catch (error) {
             console.error('Error creating company:', error);
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            alert(`Error al crear empresa: ${(error as any).response?.data?.message || (error as any).message}`);
+            Swal.fire('Error', `Error al crear empresa: ${(error as any).response?.data?.message || (error as any).message}`, 'error');
         }
     };
 
@@ -63,21 +84,55 @@ export const CompaniesPage = () => {
             contactName: company.contactName || '',
             email: company.email || '',
             phone: company.phone || '',
-            address: company.address || ''
+            address: company.address || '',
+            organizationType: company.organizationType || '',
+            employeeCount: company.employeeCount || ''
         });
+        
+        // Check if values are custom
+        if (company.organizationType && !ORGANIZATION_TYPES.includes(company.organizationType) && company.organizationType !== 'Otro') {
+            setIsCustomOrgType(true);
+            setCustomOrgType(company.organizationType);
+            setFormData(prev => ({ ...prev, organizationType: 'Otro' }));
+        } else {
+            setIsCustomOrgType(false);
+            setCustomOrgType('');
+        }
+
+        if (company.employeeCount && !EMPLOYEE_COUNTS.includes(company.employeeCount) && company.employeeCount !== 'Otro') {
+            setIsCustomEmpCount(true);
+            setCustomEmpCount(company.employeeCount);
+            setFormData(prev => ({ ...prev, employeeCount: 'Otro' }));
+        } else {
+            setIsCustomEmpCount(false);
+            setCustomEmpCount('');
+        }
+
         setEditingId(company.id);
         setShowModal(true);
     };
 
     const handleDelete = async (id: string) => {
-        if (!confirm('¿Estás seguro de que deseas eliminar esta empresa?')) return;
+        const result = await Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Se eliminará la empresa de forma permanente.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        });
         
-        try {
-            await api.delete(`/companies/${id}`);
-            setCompanies(companies.filter(c => c.id !== id));
-        } catch (error) {
-            console.error('Error deleting company:', error);
-            alert('Error al eliminar la empresa');
+        if (result.isConfirmed) {
+            try {
+                await api.delete(`/companies/${id}`);
+                setCompanies(companies.filter(c => c.id !== id));
+                Swal.fire('Eliminado!', 'La empresa ha sido eliminada.', 'success');
+            } catch (error) {
+                console.error('Error deleting company:', error);
+                Swal.fire('Error', 'No se pudo eliminar la empresa', 'error');
+            }
         }
     };
 
@@ -86,15 +141,22 @@ export const CompaniesPage = () => {
         if (!editingId) return;
 
         try {
-            await api.patch(`/companies/${editingId}`, formData);
-            alert('Empresa actualizada exitosamente');
+            const payload = {
+                ...formData,
+                organizationType: isCustomOrgType ? customOrgType : formData.organizationType,
+                employeeCount: isCustomEmpCount ? customEmpCount : formData.employeeCount
+            };
+            await api.patch(`/companies/${editingId}`, payload);
+            Swal.fire({ icon: 'success', title: 'Empresa actualizada exitosamente', showConfirmButton: false, timer: 1500 });
             setShowModal(false);
             setEditingId(null);
-            setFormData({ name: '', contactName: '', email: '', phone: '', address: '' });
+            setFormData({ name: '', contactName: '', email: '', phone: '', address: '', organizationType: '', employeeCount: '' });
+            setCustomOrgType('');
+            setCustomEmpCount('');
             fetchCompanies();
         } catch (error) {
             console.error('Error updating company:', error);
-            alert('Error al actualizar empresa');
+            Swal.fire('Error', 'Error al actualizar empresa', 'error');
         }
     };
 
@@ -108,7 +170,11 @@ export const CompaniesPage = () => {
 
     const openCreateModal = () => {
         setEditingId(null);
-        setFormData({ name: '', contactName: '', email: '', phone: '', address: '' });
+        setFormData({ name: '', contactName: '', email: '', phone: '', address: '', organizationType: '', employeeCount: '' });
+        setCustomOrgType('');
+        setCustomEmpCount('');
+        setIsCustomOrgType(false);
+        setIsCustomEmpCount(false);
         setShowModal(true);
     };
 
@@ -291,7 +357,63 @@ export const CompaniesPage = () => {
                                         onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                                     />
                                 </div>
+                                </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de Organización</label>
+                                    <select
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary outline-none transition-all"
+                                        value={formData.organizationType}
+                                        onChange={(e) => {
+                                            const val = e.target.value;
+                                            setFormData({ ...formData, organizationType: val });
+                                            setIsCustomOrgType(val === 'Otro');
+                                        }}
+                                    >
+                                        <option value="">Seleccionar...</option>
+                                        {ORGANIZATION_TYPES.map(type => (
+                                            <option key={type} value={type}>{type}</option>
+                                        ))}
+                                    </select>
+                                    {isCustomOrgType && (
+                                        <input
+                                            type="text"
+                                            placeholder="Especifique el tipo..."
+                                            className="mt-2 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary outline-none transition-all"
+                                            value={customOrgType}
+                                            onChange={(e) => setCustomOrgType(e.target.value)}
+                                        />
+                                    )}
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Cantidad de Empleados</label>
+                                    <select
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary outline-none transition-all"
+                                        value={formData.employeeCount}
+                                        onChange={(e) => {
+                                            const val = e.target.value;
+                                            setFormData({ ...formData, employeeCount: val });
+                                            setIsCustomEmpCount(val === 'Otro');
+                                        }}
+                                    >
+                                        <option value="">Seleccionar...</option>
+                                        {EMPLOYEE_COUNTS.map(count => (
+                                            <option key={count} value={count}>{count}</option>
+                                        ))}
+                                    </select>
+                                     {isCustomEmpCount && (
+                                        <input
+                                            type="text" // Using text to allow ranges or numbers
+                                            placeholder="Especifique cantidad..."
+                                            className="mt-2 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary outline-none transition-all"
+                                            value={customEmpCount}
+                                            onChange={(e) => setCustomEmpCount(e.target.value)}
+                                        />
+                                    )}
+                                </div>
                             </div>
+
                             <div className="flex justify-end gap-3 pt-4">
                                 <button
                                     type="button"

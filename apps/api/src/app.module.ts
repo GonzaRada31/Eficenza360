@@ -7,6 +7,11 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ProjectsModule } from './modules/projects/projects.module';
 import { CompaniesModule } from './modules/companies/companies.module';
 import { ProjectModulesModule } from './modules/project-modules/project-modules.module';
+import { InvoiceModule } from './modules/invoice/invoice.module';
+import { ActivityDataModule } from './modules/activity-data/activity-data.module';
+import { CarbonFootprintModule } from './modules/carbon-footprint/carbon-footprint.module';
+import { AttachmentsModule } from './modules/attachments/attachments.module';
+import { EnergyAuditModule } from './modules/energy-audit/energy-audit.module';
 
 @Module({
   imports: [
@@ -16,6 +21,12 @@ import { ProjectModulesModule } from './modules/project-modules/project-modules.
     ProjectsModule,
     CompaniesModule,
     ProjectModulesModule,
+
+    InvoiceModule,
+    ActivityDataModule,
+    CarbonFootprintModule,
+    AttachmentsModule,
+    EnergyAuditModule,
   ],
   controllers: [AppController],
   providers: [AppService],

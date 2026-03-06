@@ -13,16 +13,18 @@ async function main() {
     return;
   }
 
-  for (const p of projects) {
-    console.log(`Project: ${p.name} (ID: ${p.id})`);
-    console.log(` - Company: ${p.company?.name || 'N/A'}`);
-    console.log(` - Standard: ${p.standard}`);
-    console.log(` - Status: ${p.status}`);
-    console.log(` - StartDate: ${p.startDate}`);
-    console.log(` - Location: ${p.location}`);
-    console.log(` - Contact: ${p.projectContact}`);
-    console.log('-----------------------------------');
-  }
+  console.table(
+    projects.map((p) => ({
+      id: p.id,
+      name: p.name,
+      company: p.company?.name ?? 'N/A',
+      standard: p.standard,
+      status: p.status,
+      startDate: p.startDate ? p.startDate.toISOString() : 'N/A',
+      location: p.location,
+      contact: p.projectContact,
+    })),
+  );
 }
 
 main()

@@ -1,0 +1,2 @@
+﻿src/components/UniversalSubtask.tsx(105,21): error TS2322: Type '((id: string, data: SubtaskData) => void) | undefined' is not assignable to type '(id: string, data: SubtaskData) => void'.
+  Type 'undefined' is not assignable to type '(id: string, data: SubtaskData) => void'.

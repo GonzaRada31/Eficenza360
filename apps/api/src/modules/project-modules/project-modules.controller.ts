@@ -13,6 +13,9 @@ import { ProjectModulesService } from './project-modules.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+import type { RequestWithUser } from '../../common/interfaces/request-with-user.interface';
+import { Prisma } from '@prisma/client';
+
 @ApiTags('Project Modules')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -22,9 +25,9 @@ export class ProjectModulesController {
 
   @Post()
   create(
-    @Request() req,
+    @Request() req: RequestWithUser,
     @Param('projectId') projectId: string,
-    @Body() body: any,
+    @Body() body: Prisma.ProjectModuleUncheckedCreateInput,
   ) {
     return this.projectModulesService.create(
       req.user.tenantId,
@@ -34,17 +37,24 @@ export class ProjectModulesController {
   }
 
   @Get()
-  findAll(@Request() req, @Param('projectId') projectId: string) {
+  findAll(
+    @Request() req: RequestWithUser,
+    @Param('projectId') projectId: string,
+  ) {
     return this.projectModulesService.findAll(req.user.tenantId, projectId);
   }
 
   @Patch(':id')
-  update(@Request() req, @Param('id') id: string, @Body() body: any) {
+  update(
+    @Request() req: RequestWithUser,
+    @Param('id') id: string,
+    @Body() body: Prisma.ProjectModuleUncheckedUpdateInput,
+  ) {
     return this.projectModulesService.update(req.user.tenantId, id, body);
   }
 
   @Delete(':id')
-  remove(@Request() req, @Param('id') id: string) {
+  remove(@Request() req: RequestWithUser, @Param('id') id: string) {
     return this.projectModulesService.remove(req.user.tenantId, id);
   }
 }

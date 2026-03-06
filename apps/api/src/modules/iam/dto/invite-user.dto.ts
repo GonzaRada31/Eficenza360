@@ -7,7 +7,7 @@ import {
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-export enum UserRole {
+export enum SystemRole {
   ADMIN = 'ADMIN',
   COLLABORATOR = 'COLLABORATOR',
   CLIENT = 'CLIENT',
@@ -24,12 +24,12 @@ export class InviteUserDto {
 
   @ApiProperty({
     description: 'Rol asignado al nuevo usuario',
-    enum: UserRole,
-    example: UserRole.COLLABORATOR,
+    enum: SystemRole,
+    example: SystemRole.COLLABORATOR,
   })
-  @IsEnum(UserRole)
+  @IsEnum(SystemRole)
   @IsNotEmpty()
-  role: UserRole;
+  role: SystemRole;
 
   @ApiPropertyOptional({
     description: 'Nombre completo del usuario (opcional)',

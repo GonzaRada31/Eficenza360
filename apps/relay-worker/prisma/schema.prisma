@@ -1,0 +1,700 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://eficenza:password@localhost:5432/eficenza_db?schema=public"
+}
+
+model Tenant {
+  id                   String                @id @default(uuid())
+  name                 String
+  commercialName       String?               @map("commercial_name")
+  logoUrl              String?               @map("logo_url")
+  createdAt            DateTime              @default(now()) @map("created_at")
+  updatedAt            DateTime              @updatedAt @map("updated_at")
+  projects             Project[]
+  sites                Site[]
+  subscription         Subscription?
+  users                User[]
+  companies            Company[]
+  invoices             Invoice[]
+  energyAudits         EnergyAudit[]
+  energyRecords        EnergyRecord[]
+  equipmentInventories EquipmentInventory[]
+  siteMeasurements     SiteMeasurement[]
+  operationalData      OperationalData[]
+  energyAuditSnapshots EnergyAuditSnapshot[]
+  domainEventOutboxes  DomainEventOutbox[]
+
+  @@map("tenants")
+}
+
+model Company {
+  id               String        @id @default(uuid())
+  tenantId         String        @map("tenant_id")
+  name             String
+  contactName      String?       @map("contact_name")
+  email            String?
+  phone            String?
+  address          String?
+  organizationType String?       @map("organization_type")
+  employeeCount    String?       @map("employee_count")
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+  tenant           Tenant        @relation(fields: [tenantId], references: [id])
+  projects         Project[]
+  energyAudits     EnergyAudit[]
+
+  @@map("companies")
+}
+
+model Subscription {
+  id               String             @id @default(uuid())
+  tenantId         String             @unique @map("tenant_id")
+  mpSubscriptionId String?            @map("mp_subscription_id")
+  status           SubscriptionStatus @default(PENDING)
+  planType         String             @map("plan_type")
+  ocrEnabled       Boolean            @default(false) @map("ocr_enabled")
+  lastPaymentDate  DateTime?          @map("last_payment_date")
+  createdAt        DateTime           @default(now()) @map("created_at")
+  updatedAt        DateTime           @updatedAt @map("updated_at")
+  tenant           Tenant             @relation(fields: [tenantId], references: [id])
+
+  @@map("subscriptions")
+}
+
+model User {
+  id                  String     @id @default(uuid())
+  tenantId            String     @map("tenant_id")
+  email               String     @unique
+  passwordHash        String?    @map("password_hash")
+  fullName            String     @map("full_name")
+  role                UserRole   @default(COLLABORATOR)
+  status              UserStatus @default(ACTIVE)
+  resetToken          String?    @unique @map("reset_token")
+  resetTokenExpires   DateTime?  @map("reset_token_expires")
+  professionalLicense String?    @map("professional_license")
+  createdAt           DateTime   @default(now()) @map("created_at")
+  updatedAt           DateTime   @updatedAt @map("updated_at")
+  assignedTasks       Task[]
+  tenant              Tenant     @relation(fields: [tenantId], references: [id])
+
+  @@map("users")
+}
+
+model Project {
+  id              String        @id @default(uuid())
+  tenantId        String        @map("tenant_id")
+  companyId       String?       @map("company_id")
+  name            String
+  standard        String?
+  location        String?
+  description     String?
+  projectContact  String?       @map("project_contact")
+  status          ProjectStatus @default(IN_PROGRESS)
+  progressPercent Float         @default(0.0) @map("progress_percent")
+  startDate       DateTime?     @map("start_date")
+  endDate         DateTime?     @map("end_date")
+  // Inventory Definition
+  baseYear        Int?          @map("base_year")
+  area            Float? // m2
+  buildingType    String?       @map("building_type")
+  historicalYears Int           @default(3) @map("historical_years")
+
+  deadline      DateTime?
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+  tenant        Tenant          @relation(fields: [tenantId], references: [id])
+  company       Company?        @relation(fields: [companyId], references: [id])
+  reports       Report[]
+  modules       ProjectModule[]
+  tasks         Task[]
+  carbonRecords CarbonRecord[]
+  deletedAt     DateTime?       @map("deleted_at")
+
+  @@index([tenantId])
+  @@index([deletedAt])
+  @@map("projects")
+}
+
+model ProjectModule {
+  id               String    @id @default(uuid())
+  tenantId         String    @map("tenant_id")
+  projectId        String    @map("project_id")
+  name             String
+  description      String?
+  orderIndex       Int       @default(0) @map("order_index")
+  deduplicationKey String?   @map("deduplication_key")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+  deletedAt        DateTime? @map("deleted_at")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tasks   Task[]
+
+  @@unique([tenantId, projectId, deduplicationKey])
+  @@index([tenantId])
+  @@index([deletedAt])
+  @@map("project_modules")
+}
+
+model Task {
+  id               String     @id @default(uuid())
+  tenantId         String     @map("tenant_id")
+  projectId        String     @map("project_id")
+  moduleId         String?    @map("module_id")
+  assignedUserId   String?    @map("assigned_user_id")
+  title            String
+  description      String?
+  startDate        DateTime?  @map("start_date")
+  endDate          DateTime?  @map("end_date")
+  type             TaskType   @default(STANDARD)
+  status           TaskStatus @default(PENDING)
+  deduplicationKey String?    @map("deduplication_key")
+  createdAt        DateTime   @default(now()) @map("created_at")
+  updatedAt        DateTime   @updatedAt @map("updated_at")
+  deletedAt        DateTime?  @map("deleted_at")
+
+  subtasks     Subtask[]
+  assignedUser User?          @relation(fields: [assignedUserId], references: [id])
+  project      Project        @relation(fields: [projectId], references: [id])
+  module       ProjectModule? @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, projectId, deduplicationKey])
+  @@index([tenantId])
+  @@index([deletedAt])
+  @@map("tasks")
+}
+
+model Subtask {
+  id          String    @id @default(uuid())
+  tenantId    String    @map("tenant_id")
+  taskId      String    @map("task_id")
+  title       String? // Optional title if different from description or for "Type of subtask"
+  description String
+  isCompleted Boolean   @default(false) @map("is_completed")
+  evidenceUrl String?   @map("evidence_url")
+  comments    String?
+  type        String? // E.g., 'DATA_COLLECTION', 'INVOICE', 'IMPROVEMENT', 'GENERAL'
+  data        Json? // For flexible fields: { annualConsumption: 1000, investment: 5000, ... }
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+  task        Task      @relation(fields: [taskId], references: [id])
+
+  // New fields for nesting and dates
+  startDate       DateTime? @map("start_date")
+  endDate         DateTime? @map("end_date")
+  parentSubtaskId String?   @map("parent_subtask_id")
+  parentSubtask   Subtask?  @relation("SubtaskHierarchy", fields: [parentSubtaskId], references: [id])
+  childSubtasks   Subtask[] @relation("SubtaskHierarchy")
+  inputType       String?   @map("input_type") // 'TEXT', 'NUMBER', 'DATE', 'FILE_UPLOAD', 'SELECT', 'TABLE', 'CHECKLIST'
+
+  // Smart Linking & Efficiency Context
+  outputContext    String[]       @map("output_context") // Tags for data produced e.g. ['ELECTRICITY_BILLS']
+  inputContext     String[]       @map("input_context") // Tags for data consumed
+  standard         String? // e.g. 'ISO 50002', 'ISO 50001'
+  isActive         Boolean        @default(true) @map("is_active")
+  deduplicationKey String?        @map("deduplication_key") // Unique key for common tasks e.g. 'DEFINE_CONTEXT'
+  workspaceMode    WorkspaceMode? @default(STANDARD) @map("workspace_mode")
+  invoices         Invoice[]
+
+  @@unique([tenantId, taskId, parentSubtaskId, deduplicationKey])
+  @@index([tenantId])
+  @@index([parentSubtaskId])
+  @@index([deduplicationKey])
+  @@index([deletedAt])
+  @@map("subtasks")
+}
+
+model Report {
+  id            String   @id @default(uuid())
+  projectId     String   @map("project_id")
+  pdfUrl        String?  @map("pdf_url")
+  signingHash   String?  @map("signing_hash")
+  signatureData Json?    @map("signature_data")
+  createdAt     DateTime @default(now()) @map("created_at")
+  project       Project  @relation(fields: [projectId], references: [id])
+
+  @@map("reports")
+}
+
+model Site {
+  id           String         @id @default(uuid())
+  tenantId     String         @map("tenant_id")
+  name         String
+  address      String?
+  internalCode String?        @map("internal_code")
+  activityData ActivityData[]
+  tenant       Tenant         @relation(fields: [tenantId], references: [id])
+
+  @@map("sites")
+}
+
+model EmissionFactor {
+  id              String         @id @default(uuid())
+  source          String // e.g. "IPCC 2006", "DEFRA 2023"
+  region          String? // e.g. "Global", "LatAm", "Argentina"
+  uncertainty     Float? // Percentage uncertainty, e.g. 5.0
+  type            String
+  factorValue     Float          @map("factor_value")
+  unitNumerator   String         @map("unit_numerator")
+  unitDenominator String         @map("unit_denominator")
+  validFrom       DateTime       @map("valid_from")
+  validTo         DateTime?      @map("valid_to")
+  carbonRecords   CarbonRecord[]
+  energyRecords   EnergyRecord[]
+
+  @@map("emission_factors")
+}
+
+model ActivityData {
+  id               String        @id @default(uuid())
+  siteId           String        @map("site_id")
+  periodStart      DateTime      @map("period_start")
+  periodEnd        DateTime      @map("period_end")
+  consumptionValue Float         @map("consumption_value")
+  originalUnit     String        @map("original_unit")
+  cost             Float?        @map("cost") // Added cost per user requirements
+  serviceType      ServiceType   @default(ELECTRICITY) @map("service_type")
+  status           DataStatus    @default(DRAFT)
+  evidenceUrl      String?       @map("evidence_url")
+  metaData         Json?         @map("meta_data")
+  createdAt        DateTime      @default(now()) @map("created_at")
+  site             Site          @relation(fields: [siteId], references: [id])
+  carbonRecord     CarbonRecord?
+
+  @@map("activity_data")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  AUDITOR
+  COLLABORATOR
+  CLIENT
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PENDING
+  SUSPENDED
+  CANCELLED
+}
+
+enum UserStatus {
+  ACTIVE
+  INVITED
+  SUSPENDED
+}
+
+enum ProjectStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETE
+  BLOCKED
+  ARCHIVED
+}
+
+enum TaskType {
+  STANDARD
+  MANDATORY
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETE
+}
+
+enum ServiceType {
+  ELECTRICITY
+  GAS
+  WATER
+  FUEL
+  OTHER
+  GAS_NATURAL
+  DIESEL
+  GASOLINE
+  LPG
+}
+
+enum DataStatus {
+  DRAFT
+  CONFIRMED
+  VALIDATED
+}
+
+enum WorkspaceMode {
+  INVOICE
+  STANDARD
+  CHECKLIST
+}
+
+model CarbonRecord {
+  id               String  @id @default(uuid())
+  projectId        String  @map("project_id")
+  activityDataId   String? @unique @map("activity_data_id") // One-to-one with source data
+  emissionFactorId String? @map("emission_factor_id")
+
+  year       Int
+  scope      CarbonScope
+  category   String // e.g. "Stationary Combustion", "Purchased Electricity"
+  sourceType CarbonSourceType @default(ACTIVITY_DATA) @map("source_type")
+
+  consumptionValue Float  @map("consumption_value")
+  unit             String
+  emissionsTotal   Float  @map("emissions_total") // tCO2e
+
+  // Traceability Fields
+  factorValueSnapshot  Float?  @map("factor_value_snapshot") // Audit proof: value used at time of calc
+  factorSourceSnapshot String? @map("factor_source_snapshot") // Audit proof: source used
+  formulaSnapshot      String? @map("formula_snapshot") // e.g. "1000 kWh * 0.35 kgCO2e/kWh"
+
+  metaData  Json?    @map("meta_data")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  project        Project         @relation(fields: [projectId], references: [id])
+  activityData   ActivityData?   @relation(fields: [activityDataId], references: [id])
+  emissionFactor EmissionFactor? @relation(fields: [emissionFactorId], references: [id])
+
+  @@map("carbon_records")
+}
+
+enum CarbonScope {
+  SCOPE_1
+  SCOPE_2
+  SCOPE_3
+}
+
+enum CarbonSourceType {
+  MANUAL
+  ACTIVITY_DATA
+}
+
+enum InvoiceStatus {
+  PENDING_REVIEW
+  PROCESSED
+}
+
+model Invoice {
+  id          String  @id @default(uuid())
+  tenantId    String  @map("tenant_id")
+  imageUrl    String  @map("image_url")
+  vendorName  String? @map("vendor_name")
+  vendorTaxId String? @map("vendor_tax_id")
+  totalAmount Float?  @map("total_amount")
+  currency    String? @default("ARS")
+
+  // Consumption Details
+  consumption  Float?
+  unit         String?
+  periodStart  DateTime?   @map("period_start")
+  periodEnd    DateTime?   @map("period_end")
+  dueDate      DateTime?   @map("due_date")
+  clientNumber String?     @map("client_number")
+  serviceType  ServiceType @default(ELECTRICITY) @map("service_type")
+
+  status           InvoiceStatus    @default(PENDING_REVIEW)
+  processingStatus ProcessingStatus @default(PENDING) @map("processing_status")
+  source           String           @default("ai") // 'ai' | 'manual'
+  aiConfidence     Float?           @map("ai_confidence")
+  rawData          Json?            @map("raw_data") // Azure AI full response
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  subtaskId String?  @map("subtask_id")
+  subtask   Subtask? @relation(fields: [subtaskId], references: [id])
+
+  deletedAt DateTime? @map("deleted_at")
+
+  @@index([tenantId])
+  @@index([tenantId, subtaskId])
+  @@index([subtaskId, status])
+  @@index([deletedAt])
+  @@map("invoices")
+}
+
+enum ProcessingStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+// ============================================
+// MODULE 1: ENERGY AUDIT (ESG READY v2)
+// ============================================
+
+enum AuditStatus {
+  DRAFT
+  IN_PROGRESS
+  UNDER_REVIEW
+  VALIDATED
+  LOCKED
+}
+
+enum EnergyRecordType {
+  INVOICE
+  GRID
+  MEASUREMENT
+}
+
+model EnergyAudit {
+  id        String      @id @default(uuid())
+  tenantId  String      @map("tenant_id")
+  companyId String      @map("company_id")
+  name      String
+  year      Int
+  status    AuditStatus @default(DRAFT)
+  version   Int         @default(1)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  tenant          Tenant                @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  company         Company               @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  records         EnergyRecord[]
+  equipment       EquipmentInventory[]
+  measurements    SiteMeasurement[]
+  operationalData OperationalData[]
+  snapshots       EnergyAuditSnapshot[]
+
+  @@unique([id, tenantId])
+  @@unique([tenantId, companyId, year, name])
+  @@index([tenantId])
+  @@index([tenantId, deletedAt])
+  @@index([tenantId, status])
+  @@map("energy_audits")
+}
+
+model EnergyRecord {
+  id         String           @id @default(uuid())
+  tenantId   String           @map("tenant_id")
+  auditId    String           @map("audit_id")
+  recordType EnergyRecordType @map("record_type")
+  category   String // e.g. "Electricity", "Diesel"
+
+  consumptionValue Float  @map("consumption_value")
+  unit             String
+  cost             Float?
+
+  emissionFactorId String? @map("emission_factor_id")
+
+  evidenceUrl      String? @map("evidence_url")
+  deduplicationKey String? @map("deduplication_key")
+  version          Int     @default(1)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  audit          EnergyAudit     @relation(fields: [auditId], references: [id], onDelete: Restrict)
+  tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  emissionFactor EmissionFactor? @relation(fields: [emissionFactorId], references: [id], onDelete: Restrict)
+
+  @@unique([id, tenantId])
+  @@unique([tenantId, deduplicationKey])
+  @@index([tenantId])
+  @@index([tenantId, auditId])
+  @@index([auditId])
+  @@index([tenantId, deletedAt])
+  @@map("energy_records")
+}
+
+model EquipmentInventory {
+  id       String @id @default(uuid())
+  tenantId String @map("tenant_id")
+  auditId  String @map("audit_id")
+
+  name        String
+  category    String
+  powerRating Float? @map("power_rating")
+  efficiency  Float?
+  quantity    Int    @default(1)
+
+  version Int @default(1)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  audit  EnergyAudit @relation(fields: [auditId], references: [id], onDelete: Restrict)
+  tenant Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  @@unique([id, tenantId])
+  @@index([tenantId])
+  @@index([tenantId, auditId])
+  @@index([auditId])
+  @@index([tenantId, deletedAt])
+  @@map("equipment_inventories")
+}
+
+model SiteMeasurement {
+  id       String @id @default(uuid())
+  tenantId String @map("tenant_id")
+  auditId  String @map("audit_id")
+
+  parameter  String
+  value      Float
+  unit       String
+  measuredAt DateTime @map("measured_at")
+
+  version Int @default(1)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  audit  EnergyAudit @relation(fields: [auditId], references: [id], onDelete: Restrict)
+  tenant Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  @@unique([id, tenantId])
+  @@index([tenantId])
+  @@index([tenantId, auditId])
+  @@index([auditId])
+  @@index([tenantId, deletedAt])
+  @@map("site_measurements")
+}
+
+model OperationalData {
+  id       String @id @default(uuid())
+  tenantId String @map("tenant_id")
+  auditId  String @map("audit_id")
+
+  metricName String @map("metric_name")
+  value      Float
+  unit       String
+
+  version Int @default(1)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  audit  EnergyAudit @relation(fields: [auditId], references: [id], onDelete: Restrict)
+  tenant Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  @@unique([id, tenantId])
+  @@index([tenantId])
+  @@index([tenantId, auditId])
+  @@index([auditId])
+  @@index([tenantId, deletedAt])
+  @@map("operational_data")
+}
+
+// SNAPSHOT ENTITIES (Strictly immutable clones of VALIDATED audits)
+model EnergyAuditSnapshot {
+  id              String @id @default(uuid())
+  tenantId        String @map("tenant_id")
+  originalAuditId String @map("original_audit_id")
+
+  auditName String @map("audit_name")
+  auditYear Int    @map("audit_year")
+
+  frozenAt           DateTime @default(now()) @map("frozen_at")
+  isoStandardVersion String?  @map("iso_standard_version")
+
+  // Totals calculated and frozen
+  totalElectricityKwh Float? @map("total_electricity_kwh")
+  totalGasM3          Float? @map("total_gas_m3")
+
+  status String @default("VALID") // e.g. "VALID", "OBSOLETE"
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  audit           EnergyAudit                 @relation(fields: [originalAuditId], references: [id], onDelete: Restrict)
+  tenant          Tenant                      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  snapshotRecords EnergyAuditSnapshotRecord[]
+
+  @@unique([id, tenantId])
+  @@index([tenantId])
+  @@index([originalAuditId])
+  @@map("energy_audit_snapshots")
+}
+
+model EnergyAuditSnapshotRecord {
+  id         String @id @default(uuid())
+  snapshotId String @map("snapshot_id")
+
+  originalRecordId String @map("original_record_id")
+  recordType       String @map("record_type")
+  category         String
+
+  consumptionValue Float  @map("consumption_value")
+  unit             String
+  cost             Float?
+
+  // Clone of the applied emission factor at the time of validation
+  appliedEmissionFactorValue  Float?  @map("applied_emission_factor_value")
+  appliedEmissionFactorSource String? @map("applied_emission_factor_source")
+  appliedFormula              String? @map("applied_formula")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  snapshot EnergyAuditSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Restrict)
+
+  @@index([snapshotId])
+  @@map("energy_audit_snapshot_records")
+}
+
+enum AuthProvider {
+  LOCAL
+  GOOGLE
+  MICROSOFT
+  APPLE
+}
+
+enum OutboxStatus {
+  PENDING
+  PROCESSING
+  PROCESSED
+  FAILED
+}
+
+// ---------------------------------------------------------
+// ASYNC EVENTS (OUTBOX LAYER - FASE 2)
+// ---------------------------------------------------------
+
+model DomainEventOutbox {
+  id        String @id @default(uuid())
+  tenantId  String @map("tenant_id")
+  eventType String @map("event_type") @db.VarChar(100)
+  payload   Json   @db.JsonB
+
+  status      OutboxStatus @default(PENDING)
+  retryCount  Int          @default(0) @map("retry_count")
+  errorReason String?      @map("error_reason") @db.Text
+
+  lockedAt    DateTime? @map("locked_at") // Zombie Lock Preventer
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  processedAt DateTime? @map("processed_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  @@index([tenantId])
+  @@index([status, createdAt]) // Relay Fast Index
+  @@index([status, lockedAt]) // Zombie Purge Fast Index
+  @@map("domain_event_outbox")
+}
+
+model CarbonFootprintProcessedEvent {
+  // Consumer state isolation table (Idempotency Key Provider)
+  eventId    String @id @map("event_id") @db.Uuid // Must match outbox id exactly
+  tenantId   String @map("tenant_id") @db.Uuid
+  auditId    String @map("audit_id") @db.Uuid
+  snapshotId String @map("snapshot_id") @db.Uuid
+
+  processedAt DateTime @default(now()) @map("processed_at")
+
+  @@unique([eventId])
+  @@index([tenantId, auditId])
+  @@map("carbon_footprint_processed_event")
+}

@@ -15,6 +15,9 @@ import {
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 
+import { UserPayload } from '../../common/interfaces/request-with-user.interface';
+import { SystemRole } from '@prisma/client';
+
 @Injectable()
 export class IamService {
   constructor(
@@ -62,6 +65,7 @@ export class IamService {
       });
 
       // Remove password from response
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { passwordHash, ...userWithoutPassword } = user;
 
       return {
@@ -100,7 +104,7 @@ export class IamService {
     };
   }
 
-  async inviteUser(dto: InviteUserDto, currentUser: any) {
+  async inviteUser(dto: InviteUserDto, currentUser: UserPayload) {
     const existingUser = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
@@ -113,7 +117,7 @@ export class IamService {
       data: {
         email: dto.email,
         fullName: dto.fullName || 'Usuario Invitado',
-        role: dto.role as any, // Cast to Prisma enum if needed or ensure DTO matches
+        role: dto.role as SystemRole,
         tenantId: currentUser.tenantId,
         status: 'INVITED',
       },
@@ -121,6 +125,7 @@ export class IamService {
 
     // TODO: Send email invitation logic here
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash, ...result } = newUser;
     return result;
   }

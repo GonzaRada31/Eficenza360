@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class CompaniesService {
   constructor(private prisma: PrismaService) {}
 
-  create(tenantId: string, data: any) {
+  create(tenantId: string, data: Prisma.CompanyUncheckedCreateInput) {
     return this.prisma.company.create({
       data: {
         ...data,
@@ -27,7 +28,11 @@ export class CompaniesService {
     });
   }
 
-  update(tenantId: string, id: string, data: any) {
+  update(
+    tenantId: string,
+    id: string,
+    data: Prisma.CompanyUncheckedUpdateInput,
+  ) {
     return this.prisma.company.updateMany({
       where: { id, tenantId },
       data,

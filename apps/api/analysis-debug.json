@@ -1,0 +1,1588 @@
+{
+  "request": {
+    "url": "https://documentseficenza.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-invoice/analyzeResults/ff241c71-3d08-4b3c-a066-0cb3b32aaa6c?api-version=2024-11-30",
+    "method": "GET",
+    "headers": {
+      "accept": "application/json",
+      "accept-encoding": "gzip,deflate",
+      "user-agent": "azsdk-js-ai-document-intelligence-rest/1.1.0 core-rest-pipeline/1.22.2 Node/24.12.0 (Windows_NT 10.0.26100; x64)",
+      "x-ms-client-request-id": "de0de35f-d417-4bf6-bcaf-f3f0af7d0ad3",
+      "authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IlBjWDk4R1g0MjBUMVg2c0JEa3poUW1xZ3dNVSIsImtpZCI6IlBjWDk4R1g0MjBUMVg2c0JEa3poUW1xZ3dNVSJ9.eyJhdWQiOiJodHRwczovL2NvZ25pdGl2ZXNlcnZpY2VzLmF6dXJlLmNvbSIsImlzcyI6Imh0dHBzOi8vc3RzLndpbmRvd3MubmV0L2I2YzY4ZWRhLTQ1ZDMtNGE1ZC1iNDViLWJlZmYwMmUxYTU0OC8iLCJpYXQiOjE3NjkxOTM0NDEsIm5iZiI6MTc2OTE5MzQ0MSwiZXhwIjoxNzY5MTk3MzQxLCJhaW8iOiJrMlpnWVBDTzM4NGhLNkhEczI1cHVVUGtzdnhIQUE9PSIsImFwcGlkIjoiNWY2NDA3OGUtYjY5Ny00YTY1LWFkNjEtOGQwZjMzNTkzNjRhIiwiYXBwaWRhY3IiOiIxIiwiaWRwIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvYjZjNjhlZGEtNDVkMy00YTVkLWI0NWItYmVmZjAyZTFhNTQ4LyIsImlkdHlwIjoiYXBwIiwib2lkIjoiMmNhNmUwNjgtZGFhZi00ZTRjLWIwNmItMDJmOWYzZTRmYzM3IiwicmgiOiIxLkFXSUEybzdHdHRORlhVcTBXNzdfQXVHbFNKQWlNWDNJS0R4SG9PMk9VM1NiYlcyTkFBQmlBQS4iLCJzdWIiOiIyY2E2ZTA2OC1kYWFmLTRlNGMtYjA2Yi0wMmY5ZjNlNGZjMzciLCJ0aWQiOiJiNmM2OGVkYS00NWQzLTRhNWQtYjQ1Yi1iZWZmMDJlMWE1NDgiLCJ1dGkiOiJEWjd4OVZkY1FrR1FmcXhLTF8wdEFBIiwidmVyIjoiMS4wIiwieG1zX2FjdF9mY3QiOiI5IDMiLCJ4bXNfZnRkIjoicjV4S3hGb1BSZFNnOTFDbU9zZk9aVllJdkV4ODdEZjN0ak9qbXBVTXhNb0JkWE4zWlhOME15MWtjMjF6IiwieG1zX2lkcmVsIjoiNyA0IiwieG1zX3JkIjoiMC40MkxsWUJKaVRCSVM0V0FYRXRocGJMOHZPbmlaNnp3bTZYdmI1M3hmQ2hUbEZCSUltXy1hT2U3cUJiLUZaOWJ2MmR1WWFnY1U1UkFTbUtCa1dIdEN3OFo5d2R1LTRKTFp1YmxBVVc0aEFjVVUzVk1zdkZFcEgwelpOZFl2LTJZdHhjN0JJc1RzSEdBSUFBIiwieG1zX3N1Yl9mY3QiOiIzIDkifQ.ArRDygerctY8omnOqkqoKQXfDBwlwkKhAPnFflROgliYZC149TQJsjqkl1Y8TxO8N3uo1Txo910-KFjp7HSOJC2VYsdeAP3IwphG8kSN9HZPTRpjokpvFBQrGIVppdUBh9JjCTmmvIqyf8WMn-WANwQRzstMv4IrwXqIkxJbAtKhTUIx5UrZBAHXWylRMFSkq_RUkluQ1EpL731NqQU6MFZQ8e6kGS6B4h2hmlFEaMX9r4QDHrlen1zeZkiOpy9R9vAe549WuxHQSKwMDs3LMW7Qca2VlkO2hBo-kk1eOK71d3vNxm6DYkCQAavHzHmYrsMs5L02U65T7OwKHgVpuw"
+    },
+    "timeout": 0,
+    "withCredentials": false,
+    "enableBrowserStreams": true,
+    "disableKeepAlive": false,
+    "abortSignal": {},
+    "requestId": "de0de35f-d417-4bf6-bcaf-f3f0af7d0ad3",
+    "allowInsecureConnection": false
+  },
+  "headers": {
+    "content-length": "12306",
+    "content-type": "application/json; charset=utf-8",
+    "x-envoy-upstream-service-time": "54",
+    "apim-request-id": "8414187f-c054-4917-b3c3-de56f5e45eff",
+    "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+    "x-content-type-options": "nosniff",
+    "x-ms-region": "Brazil South",
+    "date": "Fri, 23 Jan 2026 18:42:29 GMT",
+    "x-ms-original-url": "https://documentseficenza.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-invoice:analyze?api-version=2024-11-30"
+  },
+  "status": "200",
+  "body": {
+    "status": "succeeded",
+    "createdDateTime": "2026-01-23T18:42:22Z",
+    "lastUpdatedDateTime": "2026-01-23T18:42:22Z",
+    "analyzeResult": {
+      "apiVersion": "2024-11-30",
+      "modelId": "prebuilt-invoice",
+      "stringIndexType": "textElements",
+      "content": "First Data®\n®\nPAGO DE EJESA\nFecha\nHora\n08/01/2026\n13:21\nIdentificación\n4514390\nPor un importe de\n$ 80210,00\nTarjeta de Crédito\nVISA ... 7694\nPAGO FACTURA\n57728689\nCOMPROBANTE DE PAGO VÁLIDO. CONSERVELO\nEJESA\nwww.ejesa.com.ar",
+      "pages": [
+        {
+          "pageNumber": 1,
+          "angle": 0.02976386994123459,
+          "width": 8.2639,
+          "height": 11.6944,
+          "unit": "inch",
+          "words": [
+            {
+              "content": "First",
+              "polygon": [
+                2.3937,
+                1.4045,
+                3.0223,
+                1.4063,
+                3.025,
+                1.7175,
+                2.3949,
+                1.7126
+              ],
+              "confidence": 0.82,
+              "span": {
+                "offset": 0,
+                "length": 5
+              }
+            },
+            {
+              "content": "Data®",
+              "polygon": [
+                3.0832,
+                1.4072,
+                3.9121,
+                1.4123,
+                3.9121,
+                1.7178,
+                3.0855,
+                1.7176
+              ],
+              "confidence": 0.977,
+              "span": {
+                "offset": 6,
+                "length": 5
+              }
+            },
+            {
+              "content": "®",
+              "polygon": [
+                3.8622,
+                1.6253,
+                3.9216,
+                1.6192,
+                3.9215,
+                1.6912,
+                3.8622,
+                1.6959
+              ],
+              "confidence": 0.895,
+              "span": {
+                "offset": 12,
+                "length": 1
+              }
+            },
+            {
+              "content": "PAGO",
+              "polygon": [
+                2.4833,
+                1.6982,
+                2.9739,
+                1.6983,
+                2.9741,
+                1.8615,
+                2.4834,
+                1.8615
+              ],
+              "confidence": 0.992,
+              "span": {
+                "offset": 14,
+                "length": 4
+              }
+            },
+            {
+              "content": "DE",
+              "polygon": [
+                3.0332,
+                1.6982,
+                3.2542,
+                1.6991,
+                3.2544,
+                1.8615,
+                3.0334,
+                1.8615
+              ],
+              "confidence": 0.999,
+              "span": {
+                "offset": 19,
+                "length": 2
+              }
+            },
+            {
+              "content": "EJESA",
+              "polygon": [
+                3.3108,
+                1.6996,
+                3.8607,
+                1.6977,
+                3.8607,
+                1.8615,
+                3.3111,
+                1.8615
+              ],
+              "confidence": 0.996,
+              "span": {
+                "offset": 22,
+                "length": 5
+              }
+            },
+            {
+              "content": "Fecha",
+              "polygon": [
+                2.3019,
+                2.101,
+                2.7984,
+                2.1013,
+                2.7984,
+                2.2612,
+                2.302,
+                2.2612
+              ],
+              "confidence": 0.995,
+              "span": {
+                "offset": 28,
+                "length": 5
+              }
+            },
+            {
+              "content": "Hora",
+              "polygon": [
+                3.8033,
+                2.1033,
+                4.1976,
+                2.1038,
+                4.1976,
+                2.2612,
+                3.8033,
+                2.2608
+              ],
+              "confidence": 0.992,
+              "span": {
+                "offset": 34,
+                "length": 4
+              }
+            },
+            {
+              "content": "08/01/2026",
+              "polygon": [
+                2.1506,
+                2.3077,
+                3.004,
+                2.3069,
+                3.004,
+                2.4759,
+                2.1509,
+                2.4758
+              ],
+              "confidence": 0.994,
+              "span": {
+                "offset": 39,
+                "length": 10
+              }
+            },
+            {
+              "content": "13:21",
+              "polygon": [
+                3.8156,
+                2.3109,
+                4.2376,
+                2.3089,
+                4.2376,
+                2.4719,
+                3.816,
+                2.4725
+              ],
+              "confidence": 0.995,
+              "span": {
+                "offset": 50,
+                "length": 5
+              }
+            },
+            {
+              "content": "Identificación",
+              "polygon": [
+                1.2403,
+                2.9174,
+                2.1924,
+                2.9187,
+                2.1926,
+                3.0778,
+                1.2423,
+                3.0778
+              ],
+              "confidence": 0.959,
+              "span": {
+                "offset": 56,
+                "length": 14
+              }
+            },
+            {
+              "content": "4514390",
+              "polygon": [
+                4.1486,
+                2.9167,
+                4.803,
+                2.9167,
+                4.803,
+                3.0721,
+                4.1487,
+                3.0721
+              ],
+              "confidence": 0.998,
+              "span": {
+                "offset": 71,
+                "length": 7
+              }
+            },
+            {
+              "content": "Por",
+              "polygon": [
+                1.2357,
+                3.2409,
+                1.4995,
+                3.2415,
+                1.5003,
+                3.4089,
+                1.2374,
+                3.4086
+              ],
+              "confidence": 0.998,
+              "span": {
+                "offset": 79,
+                "length": 3
+              }
+            },
+            {
+              "content": "un",
+              "polygon": [
+                1.5379,
+                3.242,
+                1.6836,
+                3.2425,
+                1.6836,
+                3.409,
+                1.5385,
+                3.409
+              ],
+              "confidence": 0.996,
+              "span": {
+                "offset": 83,
+                "length": 2
+              }
+            },
+            {
+              "content": "importe",
+              "polygon": [
+                1.7193,
+                3.2426,
+                2.2716,
+                3.2417,
+                2.2715,
+                3.409,
+                1.7193,
+                3.409
+              ],
+              "confidence": 0.992,
+              "span": {
+                "offset": 86,
+                "length": 7
+              }
+            },
+            {
+              "content": "de",
+              "polygon": [
+                2.3211,
+                3.2419,
+                2.5129,
+                3.2414,
+                2.5129,
+                3.4089,
+                2.3209,
+                3.409
+              ],
+              "confidence": 0.998,
+              "span": {
+                "offset": 94,
+                "length": 2
+              }
+            },
+            {
+              "content": "$",
+              "polygon": [
+                3.9731,
+                3.2317,
+                4.0641,
+                3.2334,
+                4.0641,
+                3.4049,
+                3.973,
+                3.4052
+              ],
+              "confidence": 0.977,
+              "span": {
+                "offset": 97,
+                "length": 1
+              }
+            },
+            {
+              "content": "80210,00",
+              "polygon": [
+                4.1152,
+                3.2336,
+                4.803,
+                3.233,
+                4.803,
+                3.4087,
+                4.1152,
+                3.4052
+              ],
+              "confidence": 0.995,
+              "span": {
+                "offset": 99,
+                "length": 8
+              }
+            },
+            {
+              "content": "Tarjeta",
+              "polygon": [
+                1.2339,
+                3.5487,
+                1.7257,
+                3.5492,
+                1.7276,
+                3.7271,
+                1.2361,
+                3.7277
+              ],
+              "confidence": 0.995,
+              "span": {
+                "offset": 108,
+                "length": 7
+              }
+            },
+            {
+              "content": "de",
+              "polygon": [
+                1.7691,
+                3.549,
+                1.9456,
+                3.5493,
+                1.9464,
+                3.7253,
+                1.7712,
+                3.7269
+              ],
+              "confidence": 0.998,
+              "span": {
+                "offset": 116,
+                "length": 2
+              }
+            },
+            {
+              "content": "Crédito",
+              "polygon": [
+                1.9977,
+                3.5497,
+                2.5185,
+                3.5477,
+                2.5186,
+                3.7227,
+                1.9982,
+                3.7246
+              ],
+              "confidence": 0.994,
+              "span": {
+                "offset": 119,
+                "length": 7
+              }
+            },
+            {
+              "content": "VISA",
+              "polygon": [
+                3.8784,
+                3.586,
+                4.2391,
+                3.588,
+                4.2407,
+                3.751,
+                3.8806,
+                3.7495
+              ],
+              "confidence": 0.989,
+              "span": {
+                "offset": 127,
+                "length": 4
+              }
+            },
+            {
+              "content": "...",
+              "polygon": [
+                4.2845,
+                3.5878,
+                4.402,
+                3.5898,
+                4.403,
+                3.7505,
+                4.2861,
+                3.7509
+              ],
+              "confidence": 0.963,
+              "span": {
+                "offset": 132,
+                "length": 3
+              }
+            },
+            {
+              "content": "7694",
+              "polygon": [
+                4.4341,
+                3.5899,
+                4.803,
+                3.5869,
+                4.803,
+                3.7516,
+                4.4349,
+                3.751
+              ],
+              "confidence": 0.989,
+              "span": {
+                "offset": 136,
+                "length": 4
+              }
+            },
+            {
+              "content": "PAGO",
+              "polygon": [
+                1.2352,
+                3.907,
+                1.7075,
+                3.9086,
+                1.7088,
+                4.0714,
+                1.2381,
+                4.0707
+              ],
+              "confidence": 0.988,
+              "span": {
+                "offset": 141,
+                "length": 4
+              }
+            },
+            {
+              "content": "FACTURA",
+              "polygon": [
+                1.7609,
+                3.9086,
+                2.5243,
+                3.906,
+                2.5243,
+                4.069,
+                1.7622,
+                4.0714
+              ],
+              "confidence": 0.994,
+              "span": {
+                "offset": 146,
+                "length": 7
+              }
+            },
+            {
+              "content": "57728689",
+              "polygon": [
+                4.0592,
+                3.9103,
+                4.803,
+                3.911,
+                4.803,
+                4.0705,
+                4.0592,
+                4.0688
+              ],
+              "confidence": 0.996,
+              "span": {
+                "offset": 154,
+                "length": 8
+              }
+            },
+            {
+              "content": "COMPROBANTE",
+              "polygon": [
+                1.2353,
+                4.2121,
+                2.0829,
+                4.2105,
+                2.0826,
+                4.3454,
+                1.2362,
+                4.3486
+              ],
+              "confidence": 0.993,
+              "span": {
+                "offset": 163,
+                "length": 11
+              }
+            },
+            {
+              "content": "DE",
+              "polygon": [
+                2.121,
+                4.2102,
+                2.2686,
+                4.2095,
+                2.2682,
+                4.3454,
+                2.1206,
+                4.3452
+              ],
+              "confidence": 0.997,
+              "span": {
+                "offset": 175,
+                "length": 2
+              }
+            },
+            {
+              "content": "PAGO",
+              "polygon": [
+                2.3088,
+                4.2094,
+                2.6018,
+                4.2089,
+                2.6017,
+                4.3457,
+                2.3085,
+                4.3455
+              ],
+              "confidence": 0.992,
+              "span": {
+                "offset": 178,
+                "length": 4
+              }
+            },
+            {
+              "content": "VÁLIDO.",
+              "polygon": [
+                2.6398,
+                4.2088,
+                3.0692,
+                4.2072,
+                3.0687,
+                4.3448,
+                2.6396,
+                4.3456
+              ],
+              "confidence": 0.912,
+              "span": {
+                "offset": 183,
+                "length": 7
+              }
+            },
+            {
+              "content": "CONSERVELO",
+              "polygon": [
+                3.114,
+                4.207,
+                3.8778,
+                4.2066,
+                3.8778,
+                4.3433,
+                3.1134,
+                4.345
+              ],
+              "confidence": 0.994,
+              "span": {
+                "offset": 191,
+                "length": 10
+              }
+            },
+            {
+              "content": "EJESA",
+              "polygon": [
+                2.3914,
+                4.6074,
+                3.9178,
+                4.5994,
+                3.9178,
+                5.0478,
+                2.3998,
+                5.0421
+              ],
+              "confidence": 0.992,
+              "span": {
+                "offset": 202,
+                "length": 5
+              }
+            },
+            {
+              "content": "www.ejesa.com.ar",
+              "polygon": [
+                2.4322,
+                5.0487,
+                3.8892,
+                5.0455,
+                3.8892,
+                5.2113,
+                2.4347,
+                5.2134
+              ],
+              "confidence": 0.992,
+              "span": {
+                "offset": 208,
+                "length": 16
+              }
+            }
+          ],
+          "lines": [
+            {
+              "content": "First Data®",
+              "polygon": [
+                2.3937,
+                1.3999,
+                3.9105,
+                1.4117,
+                3.9081,
+                1.7188,
+                2.3929,
+                1.7075
+              ],
+              "spans": [
+                {
+                  "offset": 0,
+                  "length": 11
+                }
+              ]
+            },
+            {
+              "content": "®",
+              "polygon": [
+                3.8622,
+                1.6194,
+                3.919,
+                1.6194,
+                3.919,
+                1.6959,
+                3.8622,
+                1.6959
+              ],
+              "spans": [
+                {
+                  "offset": 12,
+                  "length": 1
+                }
+              ]
+            },
+            {
+              "content": "PAGO DE EJESA",
+              "polygon": [
+                2.4833,
+                1.6972,
+                3.8553,
+                1.6975,
+                3.8552,
+                1.8613,
+                2.4833,
+                1.861
+              ],
+              "spans": [
+                {
+                  "offset": 14,
+                  "length": 13
+                }
+              ]
+            },
+            {
+              "content": "Fecha",
+              "polygon": [
+                2.3019,
+                2.0999,
+                2.7964,
+                2.1013,
+                2.796,
+                2.2612,
+                2.3016,
+                2.2599
+              ],
+              "spans": [
+                {
+                  "offset": 28,
+                  "length": 5
+                }
+              ]
+            },
+            {
+              "content": "Hora",
+              "polygon": [
+                3.8033,
+                2.1016,
+                4.1967,
+                2.1039,
+                4.1958,
+                2.2612,
+                3.8024,
+                2.2589
+              ],
+              "spans": [
+                {
+                  "offset": 34,
+                  "length": 4
+                }
+              ]
+            },
+            {
+              "content": "08/01/2026",
+              "polygon": [
+                2.1506,
+                2.3075,
+                3.0017,
+                2.3066,
+                3.0019,
+                2.4743,
+                2.1507,
+                2.4752
+              ],
+              "spans": [
+                {
+                  "offset": 39,
+                  "length": 10
+                }
+              ]
+            },
+            {
+              "content": "13:21",
+              "polygon": [
+                3.8154,
+                2.3103,
+                4.2323,
+                2.3086,
+                4.233,
+                2.4698,
+                3.816,
+                2.4715
+              ],
+              "spans": [
+                {
+                  "offset": 50,
+                  "length": 5
+                }
+              ]
+            },
+            {
+              "content": "Identificación",
+              "polygon": [
+                1.2403,
+                2.9174,
+                2.1895,
+                2.918,
+                2.1895,
+                3.0772,
+                1.2402,
+                3.0766
+              ],
+              "spans": [
+                {
+                  "offset": 56,
+                  "length": 14
+                }
+              ]
+            },
+            {
+              "content": "4514390",
+              "polygon": [
+                4.1486,
+                2.9162,
+                4.8016,
+                2.9165,
+                4.8015,
+                3.0716,
+                4.1485,
+                3.0713
+              ],
+              "spans": [
+                {
+                  "offset": 71,
+                  "length": 7
+                }
+              ]
+            },
+            {
+              "content": "Por un importe de",
+              "polygon": [
+                1.2357,
+                3.2404,
+                2.5087,
+                3.2415,
+                2.5085,
+                3.4086,
+                1.2355,
+                3.4075
+              ],
+              "spans": [
+                {
+                  "offset": 79,
+                  "length": 17
+                }
+              ]
+            },
+            {
+              "content": "$ 80210,00",
+              "polygon": [
+                3.9731,
+                3.2317,
+                4.801,
+                3.2326,
+                4.8009,
+                3.4059,
+                3.9729,
+                3.4051
+              ],
+              "spans": [
+                {
+                  "offset": 97,
+                  "length": 10
+                }
+              ]
+            },
+            {
+              "content": "Tarjeta de Crédito",
+              "polygon": [
+                1.2339,
+                3.5487,
+                2.5154,
+                3.5478,
+                2.5155,
+                3.724,
+                1.234,
+                3.725
+              ],
+              "spans": [
+                {
+                  "offset": 108,
+                  "length": 18
+                }
+              ]
+            },
+            {
+              "content": "VISA ... 7694",
+              "polygon": [
+                3.8784,
+                3.586,
+                4.8026,
+                3.5868,
+                4.8024,
+                3.7499,
+                3.8782,
+                3.7491
+              ],
+              "spans": [
+                {
+                  "offset": 127,
+                  "length": 13
+                }
+              ]
+            },
+            {
+              "content": "PAGO FACTURA",
+              "polygon": [
+                1.2352,
+                3.907,
+                2.522,
+                3.906,
+                2.5222,
+                4.0682,
+                1.2353,
+                4.0692
+              ],
+              "spans": [
+                {
+                  "offset": 141,
+                  "length": 12
+                }
+              ]
+            },
+            {
+              "content": "57728689",
+              "polygon": [
+                4.0592,
+                3.9103,
+                4.8027,
+                3.9107,
+                4.8026,
+                4.0685,
+                4.0591,
+                4.0681
+              ],
+              "spans": [
+                {
+                  "offset": 154,
+                  "length": 8
+                }
+              ]
+            },
+            {
+              "content": "COMPROBANTE DE PAGO VÁLIDO. CONSERVELO",
+              "polygon": [
+                1.2353,
+                4.2102,
+                3.8775,
+                4.2056,
+                3.8778,
+                4.3417,
+                1.2355,
+                4.3464
+              ],
+              "spans": [
+                {
+                  "offset": 163,
+                  "length": 38
+                }
+              ]
+            },
+            {
+              "content": "EJESA",
+              "polygon": [
+                2.3914,
+                4.6074,
+                3.911,
+                4.5991,
+                3.9135,
+                5.0428,
+                2.3938,
+                5.0478
+              ],
+              "spans": [
+                {
+                  "offset": 202,
+                  "length": 5
+                }
+              ]
+            },
+            {
+              "content": "www.ejesa.com.ar",
+              "polygon": [
+                2.4322,
+                5.0458,
+                3.885,
+                5.0433,
+                3.8853,
+                5.2097,
+                2.4325,
+                5.2122
+              ],
+              "spans": [
+                {
+                  "offset": 208,
+                  "length": 16
+                }
+              ]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 0,
+              "length": 224
+            }
+          ]
+        }
+      ],
+      "tables": [
+        {
+          "rowCount": 5,
+          "columnCount": 2,
+          "cells": [
+            {
+              "kind": "columnHeader",
+              "rowIndex": 0,
+              "columnIndex": 0,
+              "content": "Fecha\n08/01/2026",
+              "boundingRegions": [
+                {
+                  "pageNumber": 1,
+                  "polygon": [
+                    1.1822,
+                    1.9015,
+                    3.3981,
+                    1.9015,
+                    3.3981,
+                    2.6838,
+                    1.1765,
+                    2.6838
+                  ]
+                }
+              ],
+              "spans": [
+                {
+                  "offset": 28,
+                  "length": 5
+                },
+                {
+                  "offset": 39,
+                  "length": 10
+                }
+              ]
+            },
+            {
+              "kind": "columnHeader",
+              "rowIndex": 0,
+              "columnIndex": 1,
+              "content": "Hora\n13:21",
+              "boundingRegions": [
+                {
+                  "pageNumber": 1,
+                  "polygon": [
+                    3.3981,
+                    1.9015,
+                    4.8487,
+                    1.9015,
+                    4.8544,
+                    2.6838,
+                    3.3981,
+                    2.6838
+                  ]
+                }
+              ],
+              "spans": [
+                {
+                  "offset": 34,
+                  "length": 4
+                },
+                {
+                  "offset": 50,
+                  "length": 5
+                }
+              ]
+            },
+            {
+              "rowIndex": 1,
+              "columnIndex": 0,
+              "content": "Identificación",
+              "boundingRegions": [
+                {
+                  "pageNumber": 1,
+                  "polygon": [
+                    1.1765,
+                    2.6838,
+                    3.3981,
+                    2.6838,
+                    3.3981,
+                    3.152,
+                    1.1765,
+                    3.1577
+                  ]
+                }
+              ],
+              "spans": [
+                {
+                  "offset": 56,
+                  "length": 14
+                }
+              ]
+            },
+            {
+              "rowIndex": 1,
+              "columnIndex": 1,
+              "content": "4514390",
+              "boundingRegions": [
+                {
+                  "pageNumber": 1,
+                  "polygon": [
+                    3.3981,
+                    2.6838,
+                    4.8544,
+                    2.6838,
+                    4.8544,
+                    3.152,
+                    3.3981,
+                    3.152
+                  ]
+                }
+              ],
+              "spans": [
+                {
+                  "offset": 71,
+                  "length": 7
+                }
+              ]
+            },
+            {
+              "rowIndex": 2,
+              "columnIndex": 0,
+              "content": "Por un importe de",
+              "boundingRegions": [
+                {
+                  "pageNumber": 1,
+                  "polygon": [
+                    1.1765,
+                    3.1577,
+                    3.3981,
+                    3.152,
+                    3.3981,
+                    3.4775,
+                    1.1765,
+                    3.4775
+                  ]
+                }
+              ],
+              "spans": [
+                {
+                  "offset": 79,
+                  "length": 17
+                }
+              ]
+            },
+            {
+              "rowIndex": 2,
+              "columnIndex": 1,
+              "content": "$ 80210,00",
+              "boundingRegions": [
+                {
+                  "pageNumber": 1,
+                  "polygon": [
+                    3.3981,
+                    3.152,
+                    4.8544,
+                    3.152,
+                    4.8601,
+                    3.4775,
+                    3.3981,
+                    3.4775
+                  ]
+                }
+              ],
+              "spans": [
+                {
+                  "offset": 97,
+                  "length": 10
+                }
+              ]
+            },
+            {
+              "rowIndex": 3,
+              "columnIndex": 0,
+              "content": "Tarjeta de Crédito",
+              "boundingRegions": [
+                {
+                  "pageNumber": 1,
+                  "polygon": [
+                    1.1765,
+                    3.4775,
+                    3.3981,
+                    3.4775,
+                    3.3981,
+                    3.8258,
+                    1.1765,
+                    3.8258
+                  ]
+                }
+              ],
+              "spans": [
+                {
+                  "offset": 108,
+                  "length": 18
+                }
+              ]
+            },
+            {
+              "rowIndex": 3,
+              "columnIndex": 1,
+              "content": "VISA ... 7694",
+              "boundingRegions": [
+                {
+                  "pageNumber": 1,
+                  "polygon": [
+                    3.3981,
+                    3.4775,
+                    4.8601,
+                    3.4775,
+                    4.8601,
+                    3.8258,
+                    3.3981,
+                    3.8258
+                  ]
+                }
+              ],
+              "spans": [
+                {
+                  "offset": 127,
+                  "length": 13
+                }
+              ]
+            },
+            {
+              "rowIndex": 4,
+              "columnIndex": 0,
+              "content": "PAGO FACTURA",
+              "boundingRegions": [
+                {
+                  "pageNumber": 1,
+                  "polygon": [
+                    1.1765,
+                    3.8258,
+                    3.3981,
+                    3.8258,
+                    3.3981,
+                    4.1513,
+                    1.1708,
+                    4.1513
+                  ]
+                }
+              ],
+              "spans": [
+                {
+                  "offset": 141,
+                  "length": 12
+                }
+              ]
+            },
+            {
+              "rowIndex": 4,
+              "columnIndex": 1,
+              "content": "57728689",
+              "boundingRegions": [
+                {
+                  "pageNumber": 1,
+                  "polygon": [
+                    3.3981,
+                    3.8258,
+                    4.8601,
+                    3.8258,
+                    4.8601,
+                    4.1513,
+                    3.3981,
+                    4.1513
+                  ]
+                }
+              ],
+              "spans": [
+                {
+                  "offset": 154,
+                  "length": 8
+                }
+              ]
+            }
+          ],
+          "boundingRegions": [
+            {
+              "pageNumber": 1,
+              "polygon": [
+                1.2247,
+                1.8788,
+                4.85,
+                1.8781,
+                4.8518,
+                4.2125,
+                1.2265,
+                4.2133
+              ]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 28,
+              "length": 5
+            },
+            {
+              "offset": 39,
+              "length": 10
+            },
+            {
+              "offset": 34,
+              "length": 4
+            },
+            {
+              "offset": 50,
+              "length": 112
+            }
+          ]
+        }
+      ],
+      "styles": [],
+      "documents": [
+        {
+          "docType": "invoice",
+          "boundingRegions": [
+            {
+              "pageNumber": 1,
+              "polygon": [
+                0,
+                0,
+                8.2639,
+                0,
+                8.2639,
+                11.6944,
+                0,
+                11.6944
+              ]
+            }
+          ],
+          "fields": {
+            "CustomerId": {
+              "type": "string",
+              "valueString": "4514390",
+              "content": "4514390",
+              "boundingRegions": [
+                {
+                  "pageNumber": 1,
+                  "polygon": [
+                    4.1486,
+                    2.9167,
+                    4.803,
+                    2.9167,
+                    4.803,
+                    3.0721,
+                    4.1487,
+                    3.0721
+                  ]
+                }
+              ],
+              "confidence": 0.46,
+              "spans": [
+                {
+                  "offset": 71,
+                  "length": 7
+                }
+              ]
+            },
+            "InvoiceDate": {
+              "type": "date",
+              "valueDate": "2026-01-08",
+              "content": "08/01/2026",
+              "boundingRegions": [
+                {
+                  "pageNumber": 1,
+                  "polygon": [
+                    2.1506,
+                    2.3077,
+                    3.004,
+                    2.3069,
+                    3.004,
+                    2.4759,
+                    2.1509,
+                    2.4758
+                  ]
+                }
+              ],
+              "confidence": 0.983,
+              "spans": [
+                {
+                  "offset": 39,
+                  "length": 10
+                }
+              ]
+            },
+            "InvoiceId": {
+              "type": "string",
+              "valueString": "57728689",
+              "content": "57728689",
+              "boundingRegions": [
+                {
+                  "pageNumber": 1,
+                  "polygon": [
+                    4.0592,
+                    3.9103,
+                    4.803,
+                    3.911,
+                    4.803,
+                    4.0705,
+                    4.0592,
+                    4.0688
+                  ]
+                }
+              ],
+              "confidence": 0.644,
+              "spans": [
+                {
+                  "offset": 154,
+                  "length": 8
+                }
+              ]
+            },
+            "InvoiceTotal": {
+              "type": "currency",
+              "valueCurrency": {
+                "currencySymbol": "$",
+                "amount": 80210,
+                "currencyCode": "USD"
+              },
+              "content": "$ 80210,00",
+              "boundingRegions": [
+                {
+                  "pageNumber": 1,
+                  "polygon": [
+                    3.9731,
+                    3.2266,
+                    4.8044,
+                    3.233,
+                    4.803,
+                    3.4116,
+                    3.9718,
+                    3.4052
+                  ]
+                }
+              ],
+              "confidence": 0.722,
+              "spans": [
+                {
+                  "offset": 97,
+                  "length": 10
+                }
+              ]
+            },
+            "Items": {
+              "type": "array",
+              "valueArray": [
+                {
+                  "type": "object",
+                  "valueObject": {
+                    "Amount": {
+                      "type": "currency",
+                      "valueCurrency": {
+                        "currencySymbol": "$",
+                        "amount": 80210,
+                        "currencyCode": "USD"
+                      },
+                      "content": "$ 80210,00",
+                      "boundingRegions": [
+                        {
+                          "pageNumber": 1,
+                          "polygon": [
+                            3.9731,
+                            3.2266,
+                            4.8044,
+                            3.233,
+                            4.803,
+                            3.4116,
+                            3.9718,
+                            3.4052
+                          ]
+                        }
+                      ],
+                      "confidence": 0.517,
+                      "spans": [
+                        {
+                          "offset": 97,
+                          "length": 10
+                        }
+                      ]
+                    },
+                    "Description": {
+                      "type": "string",
+                      "valueString": "Por un importe de",
+                      "content": "Por un importe de",
+                      "boundingRegions": [
+                        {
+                          "pageNumber": 1,
+                          "polygon": [
+                            1.2357,
+                            3.2392,
+                            2.5132,
+                            3.2414,
+                            2.5129,
+                            3.4108,
+                            1.2354,
+                            3.4086
+                          ]
+                        }
+                      ],
+                      "confidence": 0.038,
+                      "spans": [
+                        {
+                          "offset": 79,
+                          "length": 17
+                        }
+                      ]
+                    }
+                  },
+                  "content": "Por un importe de\n$ 80210,00",
+                  "boundingRegions": [
+                    {
+                      "pageNumber": 1,
+                      "polygon": [
+                        1.2357,
+                        3.2269,
+                        4.8033,
+                        3.233,
+                        4.803,
+                        3.4147,
+                        1.2354,
+                        3.4086
+                      ]
+                    }
+                  ],
+                  "confidence": 0.01,
+                  "spans": [
+                    {
+                      "offset": 79,
+                      "length": 28
+                    }
+                  ]
+                }
+              ]
+            },
+            "VendorName": {
+              "type": "string",
+              "valueString": "First Data®",
+              "content": "First Data®",
+              "boundingRegions": [
+                {
+                  "pageNumber": 1,
+                  "polygon": [
+                    2.3937,
+                    1.403,
+                    3.9137,
+                    1.411,
+                    3.9121,
+                    1.7222,
+                    2.3921,
+                    1.7141
+                  ]
+                }
+              ],
+              "confidence": 0.443,
+              "spans": [
+                {
+                  "offset": 0,
+                  "length": 11
+                }
+              ]
+            }
+          },
+          "confidence": 1,
+          "spans": [
+            {
+              "offset": 0,
+              "length": 224
+            }
+          ]
+        }
+      ],
+      "contentFormat": "text"
+    }
+  }
+}

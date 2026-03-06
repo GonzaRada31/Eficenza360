@@ -1,0 +1,58 @@
+[32m[Nest] 15088  - [39m27/01/2026, 02:34:43 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 15088  - [39m27/01/2026, 02:34:43 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +12ms[39m
+[32m[Nest] 15088  - [39m27/01/2026, 02:34:43 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +4ms[39m
+[32m[Nest] 15088  - [39m27/01/2026, 02:34:43 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +4ms[39m
+[32m[Nest] 15088  - [39m27/01/2026, 02:34:43 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 15088  - [39m27/01/2026, 02:34:43 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 15088  - [39m27/01/2026, 02:34:43 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 15088  - [39m27/01/2026, 02:34:43 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 15088  - [39m27/01/2026, 02:34:43 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityDataModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 15088  - [39m27/01/2026, 02:34:43 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCompaniesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 15088  - [39m27/01/2026, 02:34:43 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mProjectModulesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 15088  - [39m27/01/2026, 02:34:43 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mProjectsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 15088  - [39m27/01/2026, 02:34:43 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCarbonFootprintModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 15088  - [39m27/01/2026, 02:34:43 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAttachmentsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 15088  - [39m27/01/2026, 02:34:43 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mInvoiceModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 15088  - [39m27/01/2026, 02:34:43 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mIamModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 15088  - [39m27/01/2026, 02:34:43 [32m    LOG[39m [38;5;3m[ArchVerification] [39m[32mStarting Architectural Verification...[39m
+[32m[Nest] 15088  - [39m27/01/2026, 02:34:43 [32m    LOG[39m [38;5;3m[ArchVerification] [39m[32m1. Verifying Multi-Tenancy...[39m
+[32m[Nest] 15088  - [39m27/01/2026, 02:34:43 [32m    LOG[39m [38;5;3m[ArchVerification] [39m[32m✅ Cross-tenant access blocked (Project)[39m
+[32m[Nest] 15088  - [39m27/01/2026, 02:34:43 [32m    LOG[39m [38;5;3m[ArchVerification] [39m[32m2. Verifying Idempotency & Template Seeding...[39m
+PrismaClientValidationError: 
+Invalid `this.prisma.subtask.create()` invocation in
+C:\Users\Gonza\.gemini\antigravity\scratch\eficenza360\apps\api\dist\src\modules\projects\projects.service.js:614:62
+
+  611     }
+  612 }
+  613 if (!currentSubtaskId) {
+→ 614     const newSubtask = await this.prisma.subtask.create({
+            data: {
+              tenantId: "tenant-a-e3ff75ec-8826-4642-972c-0bd594720f26",
+              taskId: "5088d6c0-c8ef-4945-a070-338fd6396dcd",
+              title: "Reunión de Apertura",
+              description: "Kick-off meeting con las partes interesadas.",
+              type: "GENERAL",
+              parentSubtaskId: undefined,
+              inputType: "TEXT",
+              outputContext: [],
+              inputContext: [],
+              standard: undefined,
+              isActive: true,
+              deduplicationKey: "PLAN_OPENING_MEETING",
+              workspaceMode: "standard",
+                             ~~~~~~~~~~
+              data: {}
+            }
+          })
+
+Invalid value for argument `workspaceMode`. Expected WorkspaceMode.
+    at wn (C:\Users\Gonza\.gemini\antigravity\scratch\eficenza360\apps\api\node_modules\@prisma\client\runtime\library.js:29:1363)
+    at $n.handleRequestError (C:\Users\Gonza\.gemini\antigravity\scratch\eficenza360\apps\api\node_modules\@prisma\client\runtime\library.js:121:6958)
+    at $n.handleAndLogRequestError (C:\Users\Gonza\.gemini\antigravity\scratch\eficenza360\apps\api\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (C:\Users\Gonza\.gemini\antigravity\scratch\eficenza360\apps\api\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (C:\Users\Gonza\.gemini\antigravity\scratch\eficenza360\apps\api\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async ProjectsService.createRecursiveSubtasks (C:\Users\Gonza\.gemini\antigravity\scratch\eficenza360\apps\api\dist\src\modules\projects\projects.service.js:614:36)
+    at async ProjectsService.createModule (C:\Users\Gonza\.gemini\antigravity\scratch\eficenza360\apps\api\dist\src\modules\projects\projects.service.js:372:25)
+    at async bootstrap (C:\Users\Gonza\.gemini\antigravity\scratch\eficenza360\apps\api\dist\src\scripts\verify-arch.js:53:18) {
+  clientVersion: '5.22.0'
+}

@@ -16,6 +16,7 @@ import {
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
+import type { RequestWithUser } from '../../common/interfaces/request-with-user.interface';
 
 @ApiTags('Identity & Access Management')
 @Controller('iam')
@@ -46,7 +47,10 @@ export class IamController {
   @ApiResponse({ status: 409, description: 'Usuario ya existe' })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
-  invite(@Body() inviteUserDto: InviteUserDto, @Request() req) {
+  invite(
+    @Body() inviteUserDto: InviteUserDto,
+    @Request() req: RequestWithUser,
+  ) {
     return this.iamService.inviteUser(inviteUserDto, req.user);
   }
 

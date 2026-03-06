@@ -36,22 +36,28 @@ async function main() {
   await prisma.task.createMany({
     data: [
       {
+        tenantId,
         projectId: project.id,
         title: 'Recopilar facturas de energía',
         status: 'COMPLETE',
         type: 'STANDARD',
+        deduplicationKey: 'DASHBOARD_SEED_TASK_1',
       },
       {
+        tenantId,
         projectId: project.id,
         title: 'Análisis de carga instalada',
         status: 'IN_PROGRESS', // Counts as "Items en Revisión" logic I added
         type: 'STANDARD',
+        deduplicationKey: 'DASHBOARD_SEED_TASK_2',
       },
       {
+        tenantId,
         projectId: project.id,
         title: 'Medición de calidad de energía',
         status: 'PENDING', // Counts as "Hallazgos Pendientes" logic
         type: 'MANDATORY',
+        deduplicationKey: 'DASHBOARD_SEED_TASK_3',
       },
     ],
   });
