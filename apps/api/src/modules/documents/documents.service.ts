@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject } from '@nestjs/common';
 import { PrismaService } from '../../../infra/prisma/prisma.service';
-import { S3StorageAdapter } from '../../../infra/storage/s3.adapter';
+import { IStorageProvider, STORAGE_PROVIDER } from '../../../infra/storage/storage.provider.interface';
 import { getTenantId, getCurrentUserId } from '../../../infra/context/tenant.context';
 import { PresignDocumentDto, CreateDocumentDto } from '../dto/document.dto';
 
@@ -8,13 +8,17 @@ import { PresignDocumentDto, CreateDocumentDto } from '../dto/document.dto';
 export class DocumentsService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly s3Adapter: S3StorageAdapter,
+    @Inject(STORAGE_PROVIDER) private readonly storage: IStorageProvider,
   ) {}
 
   async generatePresignedUrl(dto: PresignDocumentDto) {
-    const url = await this.s3Adapter.generatePresignedPutUrl(dto.fileName, dto.contentType);
-    // Client will use this URL to PUT to S3 directly
-    return { uploadUrl: url };
+    const tenantId = getTenantId();
+    if (!tenantId) throw new Error("Tenant Context Missing");
+    
+    // Using Azure abstraction generate format ensuring tenantId isolation directly in the service
+    const blobName = `${tenantId}/${Date.now()}-${dto.fileName}`;
+    const url = await this.storage.generatePresignedUrl(blobName, tenantId);
+    return { uploadUrl: url, blobName };
   }
 
   async create(dto: CreateDocumentDto) {
@@ -76,7 +80,7 @@ export class DocumentsService {
     let downloadUrl = null;
 
     if (activeVersion && activeVersion.blobUrl) {
-      downloadUrl = await this.s3Adapter.generatePresignedGetUrl(activeVersion.blobUrl);
+      downloadUrl = await this.storage.generatePresignedUrl(activeVersion.blobUrl, activeVersion.document?.tenantId || '');
     }
 
     return {

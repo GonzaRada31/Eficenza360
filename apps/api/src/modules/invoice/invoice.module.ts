@@ -6,9 +6,10 @@ import { CarbonFootprintModule } from '../carbon-footprint/carbon-footprint.modu
 import { PrismaModule } from '../../prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { IamModule } from '../iam/iam.module';
+import { StorageModule } from '../../infra/storage/storage.module';
 
 @Module({
-  imports: [PrismaModule, ConfigModule, CarbonFootprintModule, IamModule],
+  imports: [PrismaModule, ConfigModule, CarbonFootprintModule, IamModule, StorageModule],
   controllers: [InvoiceController],
   providers: [AzureInvoiceService, InvoiceService],
   exports: [AzureInvoiceService, InvoiceService],

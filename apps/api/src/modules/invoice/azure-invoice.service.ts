@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import DocumentIntelligence, {
   getLongRunningPoller,
@@ -8,19 +8,17 @@ import DocumentIntelligence, {
   DocumentFieldOutput,
 } from '@azure-rest/ai-document-intelligence';
 import { PollerLike, OperationState } from '@azure/core-lro';
-import {
-  BlobServiceClient,
-  generateBlobSASQueryParameters,
-  BlobSASPermissions,
-  SASProtocol,
-} from '@azure/storage-blob';
 import { DefaultAzureCredential } from '@azure/identity';
+import { IStorageProvider, STORAGE_PROVIDER } from '../../infra/storage/storage.provider.interface';
 
 @Injectable()
 export class AzureInvoiceService {
   private readonly logger = new Logger(AzureInvoiceService.name);
 
-  constructor(private configService: ConfigService) {}
+  constructor(
+    private configService: ConfigService,
+    @Inject(STORAGE_PROVIDER) private readonly storage: IStorageProvider,
+  ) {}
 
   async uploadToBlob(
     fileBuffer: Buffer,
@@ -30,185 +28,20 @@ export class AzureInvoiceService {
   ): Promise<{ blobName: string; sasUrl: string }> {
     // ENFORCE TENANT ISOLATION
     if (!filename.startsWith(`${tenantId}/`)) {
-      throw new Error(
-        `Security Alert: Upload filename '${filename}' must start with tenantId '${tenantId}'`,
-      );
-    }
-    const accountUrl = this.configService.get<string>(
-      'AZURE_STORAGE_ACCOUNT_URL',
-    );
-    if (!accountUrl) {
-      throw new Error('AZURE_STORAGE_ACCOUNT_URL not configured');
+      throw new Error(`Security Alert: Upload filename '${filename}' must start with tenantId '${tenantId}'`);
     }
 
-    const credential = new DefaultAzureCredential();
-    const blobServiceClient = new BlobServiceClient(accountUrl, credential);
-
-    const containerName = 'invoices';
-    const containerClient = blobServiceClient.getContainerClient(containerName);
-
-    try {
-      // Ensure container exists (PRIVATE access)
-      await containerClient.createIfNotExists();
-
-      // Configure CORS to allow browser access to the blobs (images)
-      const serviceProperties = await blobServiceClient.getProperties();
-      const corsRules = serviceProperties.cors || [];
-      const allowedOrigin = '*'; // For development simplicity, or use 'http://localhost:5173'
-
-      const existingRule = corsRules.find(
-        (r) => r.allowedOrigins === allowedOrigin,
-      );
-
-      if (!existingRule) {
-        this.logger.log(`Enabling CORS for origin: ${allowedOrigin}`);
-        corsRules.push({
-          allowedOrigins: allowedOrigin,
-          allowedMethods: 'GET,OPTIONS',
-          allowedHeaders: '*',
-          exposedHeaders: '*',
-          maxAgeInSeconds: 3600,
-        });
-
-        await blobServiceClient.setProperties({
-          ...serviceProperties,
-          cors: corsRules,
-        });
-      }
-    } catch (error: unknown) {
-      const err = error as Error;
-      this.logger.error(
-        `Failed to create/check container or set CORS '${containerName}': ${err.message}`,
-        err.stack,
-      );
-      // Don't throw here for CORS errors, proceed with upload
-    }
-
-    const blobClient = containerClient.getBlockBlobClient(filename);
-    try {
-      await blobClient.uploadData(fileBuffer, {
-        blobHTTPHeaders: { blobContentType: mimeType },
-      });
-    } catch (error: unknown) {
-      const err = error as Error;
-      this.logger.error(
-        `Failed to upload blob '${filename}': ${err.message}`,
-        err.stack,
-      );
-      throw new Error(`Upload Error: ${err.message}`);
-    }
-
-    // Generate SAS Token for frontend access
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - 5); // Adjust for clock skew
-    const expiresOn = new Date(now);
-    expiresOn.setHours(expiresOn.getHours() + 24); // Valid for 24h
-
-    const delegationKey = await blobServiceClient.getUserDelegationKey(
-      now,
-      expiresOn,
-    );
-
-    // Extract account name robustly
-    let accountName = blobServiceClient.accountName;
-    if (!accountName) {
-      const hostname = new URL(accountUrl).hostname;
-      // Handle IP addresses (local emulator) vs defaults
-      if (hostname === '127.0.0.1' || hostname === 'localhost') {
-        accountName = 'devstoreaccount1';
-      } else {
-        accountName = hostname.split('.')[0];
-      }
-    }
-    this.logger.log(`Generating SAS for account: ${accountName}`);
-
-    let sasToken: string;
-    try {
-      sasToken = generateBlobSASQueryParameters(
-        {
-          containerName,
-          blobName: filename,
-          permissions: BlobSASPermissions.parse('r'),
-          startsOn: now,
-          expiresOn: expiresOn,
-          protocol: SASProtocol.HttpsAndHttp,
-        },
-        delegationKey,
-        accountName,
-      ).toString();
-    } catch (error: unknown) {
-      const err = error as Error;
-      this.logger.error(
-        `Failed to generate SAS token: ${err.message}`,
-        err.stack,
-      );
-      throw new Error(`SAS Gen Error: ${err.message}`);
-    }
-
-    const blobUrlWithSas = `${blobClient.url}?${sasToken}`;
-    this.logger.log(`Generated Blob URL with SAS: ${blobClient.url}?***`);
-
-    // Return both the full SAS URL (for immediate use) and the blobName (for storage)
+    // Direct injection into storage module abstraction
+    const result = await this.storage.uploadFile(fileBuffer, filename.split('/').pop() || filename, mimeType, tenantId);
+    
     return {
-      blobName: filename,
-      sasUrl: blobUrlWithSas,
+      blobName: result.blobName,
+      sasUrl: result.sasUrl,
     };
   }
 
   async getSasUrl(blobName: string, tenantId: string): Promise<string> {
-    // ENFORCE TENANT ISOLATION
-    if (!blobName.startsWith(`${tenantId}/`)) {
-      throw new Error(
-        `Security Alert: Access to blob '${blobName}' denied for tenant '${tenantId}'`,
-      );
-    }
-    const accountUrl = this.configService.get<string>(
-      'AZURE_STORAGE_ACCOUNT_URL',
-    );
-    if (!accountUrl) throw new Error('AZURE_STORAGE_ACCOUNT_URL not users');
-
-    const credential = new DefaultAzureCredential();
-    const blobServiceClient = new BlobServiceClient(accountUrl, credential);
-    const containerName = 'invoices';
-    const blobClient = blobServiceClient
-      .getContainerClient(containerName)
-      .getBlobClient(blobName);
-
-    // Generate SAS
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - 5);
-    const expiresOn = new Date(now);
-    expiresOn.setHours(expiresOn.getHours() + 24);
-
-    const delegationKey = await blobServiceClient.getUserDelegationKey(
-      now,
-      expiresOn,
-    );
-
-    let accountName = blobServiceClient.accountName;
-    if (!accountName) {
-      const hostname = new URL(accountUrl).hostname;
-      if (hostname === '127.0.0.1' || hostname === 'localhost') {
-        accountName = 'devstoreaccount1';
-      } else {
-        accountName = hostname.split('.')[0];
-      }
-    }
-
-    const sasToken = generateBlobSASQueryParameters(
-      {
-        containerName,
-        blobName,
-        permissions: BlobSASPermissions.parse('r'),
-        startsOn: now,
-        expiresOn,
-        protocol: SASProtocol.HttpsAndHttp,
-      },
-      delegationKey,
-      accountName,
-    ).toString();
-
-    return `${blobClient.url}?${sasToken}`;
+    return this.storage.generatePresignedUrl(blobName, tenantId);
   }
 
   async analyzeInvoice(fileUrl: string) {
