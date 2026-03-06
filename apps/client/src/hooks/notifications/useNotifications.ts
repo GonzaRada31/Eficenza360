@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { AppNotification } from './types';
+import type { AppNotification } from './types';
 
 // Mock data generator for B2B UI Development
 const generateMockNotifications = (): AppNotification[] => [

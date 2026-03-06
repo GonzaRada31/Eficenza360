@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import * as argon2 from 'argon2'; // Assuming argon2 as specified
+import * as bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -47,7 +47,15 @@ const ROLES = [
 async function seed() {
   console.log('🌱 Starting Enterprise Seeder...');
 
-  // 1. Seed Permissions
+  // 1. Setup Demo Tenant FIRST, as Roles depend on TenantID in our isolated schema.
+  console.log('Setting up Demo Tenant (tenant-demo)...');
+  const tenant = await prisma.tenant.upsert({
+    where: { id: 'tenant-demo' },
+    update: { name: 'Eficenza Demo SaaS', commercialName: 'Demo Corp' },
+    create: { id: 'tenant-demo', name: 'Eficenza Demo SaaS', commercialName: 'Demo Corp' },
+  });
+
+  // 2. Seed Permissions
   console.log('Seeding Permissions...');
   for (const p of PERMISSIONS) {
     await prisma.permission.upsert({
@@ -57,13 +65,13 @@ async function seed() {
     });
   }
 
-  // 2. Seed Roles & Link Permissions
+  // 3. Seed Roles & Link Permissions
   console.log('Seeding Roles...');
   for (const r of ROLES) {
     const role = await prisma.role.upsert({
-      where: { name: r.name },
+      where: { tenantId_name: { tenantId: tenant.id, name: r.name } },
       update: {},
-      create: { name: r.name, isSystem: true },
+      create: { name: r.name, isSystem: true, tenantId: tenant.id },
     });
 
     for (const permName of r.permissions) {
@@ -78,16 +86,9 @@ async function seed() {
     }
   }
 
-  // 3. Setup Demo Tenant
-  console.log('Setting up Demo Tenant (eficenza-demo)...');
-  const tenant = await prisma.tenant.upsert({
-    where: { id: 'tenant-demo' }, // fixed ID for testing purposes and idempotency
-    update: { name: 'Eficenza Demo SaaS', commercialName: 'Demo Corp' },
-    create: { id: 'tenant-demo', name: 'Eficenza Demo SaaS', commercialName: 'Demo Corp' },
-  });
-
   // 4. Create Users for Demo Tenant
-  const safePassword = await argon2.hash('DemoPassword2026!');
+  console.log('Seeding Users...');
+  const safePassword = await bcrypt.hash('DemoPassword2026!', 10);
   
   const USERS = [
     { email: 'admin@eficenza.demo', name: 'Admin Demo', roleName: 'tenant.admin' },
@@ -96,7 +97,7 @@ async function seed() {
   ];
 
   for (const u of USERS) {
-    const role = await prisma.role.findUnique({ where: { name: u.roleName } });
+    const role = await prisma.role.findUnique({ where: { tenantId_name: { tenantId: tenant.id, name: u.roleName } } });
     if (!role) throw new Error(`Role ${u.roleName} not found mapped.`);
 
     const user = await prisma.user.upsert({

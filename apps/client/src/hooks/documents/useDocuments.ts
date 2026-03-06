@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { api } from '../../../lib/api';
-import { DocumentData } from '../../../components/documents/DocumentItem';
+import { api } from '../../lib/api';
+import { DocumentData } from '../../components/documents/DocumentItem';
 
 // Standard Mock Data for UI building purposes (Fase 6C)
 const MOCK_DOCS: DocumentData[] = [
