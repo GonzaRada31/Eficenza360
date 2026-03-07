@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { AuditLogFiltersData, PaginatedAuditLogs } from '../../types/audit';
+import { type AuditLogFiltersData, type PaginatedAuditLogs } from '../../types/audit';
 import { MOCK_AUDIT_LOGS } from '../../mocks/auditLogs';
 
 interface UseAuditLogsProps {

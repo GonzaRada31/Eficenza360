@@ -1,4 +1,4 @@
-﻿import React from 'react';
+﻿import type React from 'react';
 import { FuelDataCollection } from './FuelDataCollection';
 import { OtherEnergyCollection } from './OtherEnergyCollection';
 import { InventoryCollection } from './InventoryCollection';

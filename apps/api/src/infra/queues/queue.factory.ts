@@ -20,7 +20,7 @@ export class QueueFactory {
     return new Queue(name, { 
       connection,
       defaultJobOptions: defaultQueueOptions
-    });
+    } as any);
   }
 
   static createWorker(name: string, processor: any, options: any = {}): Worker {
@@ -28,10 +28,10 @@ export class QueueFactory {
       connection,
       concurrency: options.concurrency || 5,
       ...options,
-    });
+    } as any);
   }
 
   static createQueueEvents(name: string): QueueEvents {
-    return new QueueEvents(name, { connection });
+    return new QueueEvents(name, { connection } as any);
   }
 }

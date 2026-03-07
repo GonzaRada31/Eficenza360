@@ -2,28 +2,28 @@ import { IsEmail, IsString, MinLength, IsUUID, IsOptional } from 'class-validato
 
 export class LoginDto {
   @IsEmail()
-  email!: string;
+  email: string;
 
   @IsString()
   @MinLength(8)
-  password!: string;
+  password: string;
 }
 
 export class RefreshTokenDto {
   @IsString()
-  refreshToken!: string;
+  refreshToken: string;
 }
 
 export class CreateUserDto {
   @IsEmail()
-  email!: string;
+  email: string;
 
   @IsString()
   @MinLength(8)
-  password!: string;
+  password: string;
 
   @IsString()
-  fullName!: string;
+  fullName: string;
 
   @IsUUID()
   @IsOptional()

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuditLogs } from '../../hooks/audit/useAuditLogs';
-import { AuditLogFiltersData, AuditLog } from '../../types/audit';
+import { type AuditLogFiltersData, type AuditLog } from '../../types/audit';
 import { AuditLogRow } from './AuditLogRow';
 import { AuditLogFilters } from './AuditLogFilters';
 import { AuditLogDrawer } from './AuditLogDrawer';

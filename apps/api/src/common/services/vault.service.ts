@@ -5,7 +5,7 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class VaultService implements OnModuleInit {
-  private secretClient: SecretClient;
+  private secretClient!: SecretClient;
   private readonly logger = new Logger(VaultService.name);
   private secretCache: Map<string, string> = new Map();
 

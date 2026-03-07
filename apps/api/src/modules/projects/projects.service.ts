@@ -1,13 +1,14 @@
+
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { PROJECT_TEMPLATES, SubtaskTemplate } from './project-templates';
 import {
   ProjectStatus,
-  Prisma,
   Task,
   Subtask,
   Project,
   ProjectModule,
+  Prisma,
 } from '@prisma/client';
 
 // Local type for sanitization
@@ -766,7 +767,7 @@ export class ProjectsService {
     }
 
     // Soft delete task and its subtasks
-    return this.prisma.$transaction(async (tx) => {
+    return this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       await tx.subtask.updateMany({
         where: { taskId },
         data: { deletedAt: new Date() },

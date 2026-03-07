@@ -1,7 +1,8 @@
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
-import { Resource } from '@opentelemetry/resources';
+const Resource = require('@opentelemetry/resources').Resource;
+
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
 
 const exporter = new PrometheusExporter({

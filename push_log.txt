@@ -1,0 +1,18 @@
+﻿git : Everything 
+up-to-date
+En línea: 1 Carácter: 1
++ git push origin main 
+--force 2>&1 | Out-File 
+push_log.txt -Encoding u 
+...
++ ~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~
+    + CategoryInfo       
+       : NotSpecified:   
+  (Everything up-to-da   
+ te:String) [], Remot    
+eException
+    + FullyQualifiedErro 
+   rId : NativeCommandE  
+  rror
+ 

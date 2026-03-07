@@ -1,14 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuditsService } from './audits.service';
-import { PrismaService } from '../../../infra/prisma/prisma.service';
-import { getTenantId, getCurrentUserId } from '../../../infra/context/tenant.context';
+import { PrismaService } from '../../infra/prisma/prisma.service';
+import { getTenantId, getCurrentUserId } from '../../infra/context/tenant.context';
 
-jest.mock('../../../infra/context/tenant.context', () => ({
+jest.mock('../../infra/context/tenant.context', () => ({
   getTenantId: jest.fn(() => 'tenant-123'),
   getCurrentUserId: jest.fn(() => 'user-123'),
 }));
 
-const mockPrismaService = {
+const mockPrismaService: any = {
   $transaction: jest.fn(cb => cb(mockPrismaService)),
   energyAudit: {
     create: jest.fn().mockResolvedValue({ id: 'audit-1', name: 'Mock Audit', status: 'DRAFT' }),

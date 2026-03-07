@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Search, Filter, X } from 'lucide-react';
-import { AuditLogFiltersData } from '../../types/audit';
+import { Search, X } from 'lucide-react';
+import { type AuditLogFiltersData } from '../../types/audit';
 
 interface AuditLogFiltersProps {
     filters: AuditLogFiltersData;

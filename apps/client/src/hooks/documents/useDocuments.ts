@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiClient as api } from '../../lib/api-client';
-import { DocumentData } from '../../components/documents/DocumentItem';
+import type { DocumentData } from '../../components/documents/DocumentItem';
 
 
 

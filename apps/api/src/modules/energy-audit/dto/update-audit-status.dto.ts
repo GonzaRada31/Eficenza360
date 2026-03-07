@@ -5,7 +5,7 @@ export class UpdateAuditStatusDto {
   @IsEnum(AuditStatus)
   @IsNotEmpty()
   @NotEquals(AuditStatus.VALIDATED, {
-    message: 'No puede establecer el estado a VALIDATED directamente. Utilice el endpoint de validación específico que ejecuta el Snapshotting legal.',
+  message: 'No puede establecer el estado a VALIDATED directamente. Utilice el endpoint de validación específico que ejecuta el Snapshotting legal.',
   })
   status: AuditStatus;
 }

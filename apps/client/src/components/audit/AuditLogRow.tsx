@@ -1,5 +1,5 @@
 import React from 'react';
-import { AuditLog } from '../../types/audit';
+import { type AuditLog } from '../../types/audit';
 import { Eye } from 'lucide-react';
 
 interface AuditLogRowProps {

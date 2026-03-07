@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { DocumentDropzone } from './DocumentDropzone';
 import { computeFileHash } from '../../utils/fileHash';
-import { api } from '../../lib/api';
-import { FileText, X, Loader2, CheckCircle2 } from 'lucide-react';
+import { FileText, Loader2, CheckCircle2 } from 'lucide-react';
 import { PermissionGate } from '../security/PermissionGate';
 
 interface DocumentUploaderProps {
@@ -11,7 +10,7 @@ interface DocumentUploaderProps {
     onUploadSuccess?: () => void;
 }
 
-export const DocumentUploader: React.FC<DocumentUploaderProps> = ({ entityType, entityId, onUploadSuccess }) => {
+export const DocumentUploader: React.FC<DocumentUploaderProps> = ({ entityType: _entityType, entityId: _entityId, onUploadSuccess }) => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [status, setStatus] = useState<'IDLE' | 'HASHING' | 'UPLOADING' | 'CONFIRMING' | 'SUCCESS' | 'ERROR'>('IDLE');
@@ -37,7 +36,7 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({ entityType, 
         try {
             // STEP 1: Hash the file locally (Zero Trust Security)
             setStatus('HASHING');
-            const fileHash = await computeFileHash(selectedFile);
+            await computeFileHash(selectedFile);
 
             // STEP 2: Get Presigned URL
             setStatus('UPLOADING');
@@ -56,13 +55,12 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({ entityType, 
 
             // --- MOCK API CALL FOR DEVELOPMENT ---
             await new Promise(resolve => setTimeout(resolve, 800));
-            const mockPresignedUrl = "https://mock.azure.blob/upload";
-            const mockDocumentId = "doc-" + Math.random().toString(36).substr(2, 9);
+            // Mock values generated here previously
             // ------------------------------------
 
             // STEP 3: Upload Directly to Blob Storage (Frontend to Azure/AWS directly)
             // Example of native XHR to track precise progress:
-            await new Promise<void>((resolve, reject) => {
+            await new Promise<void>((resolve, _reject) => {
                 let currentProgress = 10;
                 
                 // MOCK UPLOAD PROGRESS

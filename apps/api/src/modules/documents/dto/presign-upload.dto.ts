@@ -5,15 +5,15 @@ export class PresignUploadDto {
   @ApiProperty({ example: 'invoice-2026.pdf' })
   @IsString()
   @IsNotEmpty()
-  fileName!: string;
+  fileName: string;
 
   @ApiProperty({ example: 'application/pdf' })
   @IsString()
   @IsNotEmpty()
-  mimeType!: string;
+  mimeType: string;
 
   @ApiProperty({ example: 1048576, description: 'File size in bytes (must be > 0)' })
   @IsNumber()
   @Min(1)
-  size!: number;
+  size: number;
 }

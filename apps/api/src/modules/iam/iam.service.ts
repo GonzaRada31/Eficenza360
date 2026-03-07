@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import {
   Injectable,
   ConflictException,
@@ -37,7 +38,7 @@ export class IamService {
 
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
-    return this.prisma.$transaction(async (tx) => {
+    return this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // 1. Create Tenant
       const tenant = await tx.tenant.create({
         data: {

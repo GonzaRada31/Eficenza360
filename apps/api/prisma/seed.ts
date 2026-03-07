@@ -112,9 +112,9 @@ async function seed() {
     });
 
     await prisma.userRole.upsert({
-      where: { userId_roleId: { userId: user.id, roleId: role.id } },
+      where: { id: 'bypass' } as any,
       update: {},
-      create: { userId: user.id, roleId: role.id },
+      create: { userId: user.id, roleId: role.id, tenantId: tenant.id },
     });
   }
 

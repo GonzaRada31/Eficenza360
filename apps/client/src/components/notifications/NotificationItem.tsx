@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppNotification } from '../../hooks/notifications/types';
+import type { AppNotification } from '../../hooks/notifications/types';
 import { 
     CheckCircle2, 
     Leaf, 

@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { Injectable, NotFoundException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateEnergyAuditDto } from './dto/create-energy-audit.dto';
@@ -109,7 +110,7 @@ export class EnergyAuditService {
     }
 
     // Interactive Transaction con Timeout adaptado a bulk processing (15s máximo seguro)
-    return this.prisma.$transaction(async (tx) => {
+    return this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // 1. OCC Lock on Audit
       const auditUpdate = await tx.energyAudit.updateMany({
         where: { id: auditId, tenantId, version: audit.version },
@@ -144,7 +145,7 @@ export class EnergyAuditService {
         // Mientras existan registros pendientes por procesar, itera consultando de a CHUNK_SIZE.
         while (recordsProcessed < totalRecords) {
           // Búsqueda del lote. Desvinculamos datos innecesarios a Memoria (Sin spread completo)
-          const recordsChunk = await tx.energyRecord.findMany({
+          const recordsChunk: any = await tx.energyRecord.findMany({
             where: { auditId, tenantId, deletedAt: null },
             take: CHUNK_SIZE,
             skip: lastId ? 1 : 0,
@@ -172,7 +173,7 @@ export class EnergyAuditService {
 
           // Inyección Bulk del Lote exacto
           await tx.energyAuditSnapshotRecord.createMany({
-            data: recordsChunk.map(r => ({
+            data: recordsChunk.map((r: any) => ({
               snapshotId: snapshot.id,
               originalRecordId: r.id,
               recordType: r.recordType,

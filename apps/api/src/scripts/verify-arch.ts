@@ -30,7 +30,7 @@ async function bootstrap() {
         { id: tenantB, name: 'Tenant B' },
       ],
     });
-  } catch (e) {
+  } catch (e: any) {
     logger.warn('Tenants might already exist or error creating: ' + e.message);
   }
 

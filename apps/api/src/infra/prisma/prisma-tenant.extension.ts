@@ -5,19 +5,22 @@ export function extendedPrismaClient(client: PrismaClient) {
   return client.$extends({
     query: {
       $allModels: {
-        async $allOperations({ args, query }) {
-          const tenantId = getTenantId();
+        async $allOperations({ operation, args, query }: any) {
+          const tenantId = getTenantId(); // Keep original getTenantId() call
 
-          // Standard logic to automatically inject tenantId into where clauses
-          // if we're in a tenant context and the model has a tenantId field.
+          if (!tenantId) {
+            return query(args);
+          }
+
+          if (operation === 'create' || operation === 'createMany') {
+             return query(args);
+          }
+
           if (tenantId) {
-            // Note: In an enterprise app, this should strictly check if the model
-            // has a tenantId property before injecting, preventing runtime errors.
-            // Simplified injection logic:
+            if (!args) args = {};
             if (!args.where) {
               args.where = {};
             }
-            // @ts-ignore - TS won't know every model has tenantId, but runtime handles it
             args.where.tenantId = tenantId;
           }
 

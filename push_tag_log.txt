@@ -1,0 +1,98 @@
+﻿git : remote: error: 
+GH013: Repository rule 
+violations found for refs
+/tags/v0.4-codebase-harde
+ned.        
+En línea: 1 Carácter: 1
++ git push origin 
+v0.4-codebase-hardened 
+--force 2>&1 | Out-File 
+push_t ...
++ ~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~
+    + CategoryInfo       
+       : NotSpecified:   
+  (remote: error: ...r   
+ dened.        :Strin    
+g) [], RemoteExcepti    
+on
+    + FullyQualifiedErro 
+   rId : NativeCommandE  
+  rror
+ 
+remote: 
+remote: - GITHUB PUSH 
+PROTECTION        
+remote:   ÔÇöÔÇöÔÇöÔÇöÔÇö
+ÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔ
+ÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇ
+öÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇö
+ÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔ
+ÇöÔÇöÔÇö        
+remote:     Resolve the 
+following violations 
+before pushing again     
+   
+remote: 
+remote:     - Push 
+cannot contain secrets   
+     
+remote: 
+remote:             
+remote:      (?) Learn 
+how to resolve a blocked 
+push        
+remote:      https://docs
+.github.com/code-security
+/secret-scanning/working-
+with-secret-scanning-and-
+push-protection/working-w
+ith-push-protection-from-
+the-command-line#resolvin
+g-a-blocked-push        
+remote:             
+remote:             
+remote:       ÔÇöÔÇö 
+Google Cloud Service 
+Account Credentials ÔÇöÔÇ
+öÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇöÔÇö
+        
+remote:        
+locations:        
+remote:          - 
+commit: 64065029eb1596999
+5dcf3313f27184b2eb8a36b  
+      
+remote:            path: 
+apps/api/secrets/eficenza
+360-84611252f767.json:1  
+      
+remote:             
+remote:        (?) To 
+push, remove secret from 
+commit(s) or follow this 
+URL to allow the secret. 
+       
+remote:        https://gi
+thub.com/GonzaRada31/Efic
+enza360/security/secret-s
+canning/unblock-secret/3A
+abVIElZY4KuF4oLk3UHdadLvk
+        
+remote:             
+remote: 
+remote: 
+To https://github.com/Gon
+zaRada31/Eficenza360.git
+ ! [remote rejected] 
+v0.4-codebase-hardened 
+-> 
+v0.4-codebase-hardened 
+(push declined due to 
+repository rule 
+violations)
+error: failed to push 
+some refs to 'https://git
+hub.com/GonzaRada31/Efice
+nza360.git'

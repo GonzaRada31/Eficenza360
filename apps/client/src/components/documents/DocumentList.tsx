@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DocumentItem, DocumentData } from './DocumentItem';
+import { DocumentItem, type DocumentData } from './DocumentItem';
 import { DocumentPreview } from './DocumentPreview';
 import { useDocuments } from '../../hooks/documents/useDocuments';
 import { useDeleteDocument } from '../../hooks/documents/useDeleteDocument';

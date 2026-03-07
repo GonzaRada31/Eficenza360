@@ -1,8 +1,10 @@
+import { Prisma } from '@prisma/client';
 import { Injectable, NotFoundException, Inject } from '@nestjs/common';
-import { PrismaService } from '../../../infra/prisma/prisma.service';
-import { IStorageProvider, STORAGE_PROVIDER } from '../../../infra/storage/storage.provider.interface';
-import { getTenantId, getCurrentUserId } from '../../../infra/context/tenant.context';
-import { PresignDocumentDto, CreateDocumentDto } from '../dto/document.dto';
+import { PrismaService } from '../../infra/prisma/prisma.service';
+import type { IStorageProvider } from '../../infra/storage/storage.provider.interface';
+import { STORAGE_PROVIDER } from '../../infra/storage/storage.provider.interface';
+import { getTenantId, getCurrentUserId } from '../../infra/context/tenant.context';
+import { PresignDocumentDto, CreateDocumentDto } from './dto/document.dto';
 
 @Injectable()
 export class DocumentsService {
@@ -27,9 +29,9 @@ export class DocumentsService {
 
     if (!tenantId) throw new Error("Tenant Context Missing");
 
-    return this.prisma.$transaction(async (tx) => {
+    return this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Create Base Document
-      const document = await tx.document.create({
+      const document = await (tx as any).document.create({
         data: {
           tenantId,
           name: dto.name,
@@ -39,7 +41,7 @@ export class DocumentsService {
       });
 
       // Create Version 1 linked to S3
-      await tx.documentVersion.create({
+      await (tx as any).documentVersion.create({
         data: {
           documentId: document.id,
           version: 1,
@@ -52,7 +54,7 @@ export class DocumentsService {
       });
 
       // Emit Domain Event
-      await tx.domainEventOutbox.create({
+      await (tx as any).domainEventOutbox.create({
         data: {
           tenantId,
           aggregateType: 'Document',
@@ -67,7 +69,7 @@ export class DocumentsService {
   }
 
   async findOne(id: string) {
-    const document = await this.prisma.tenantClient.document.findUnique({
+    const document = await (this.prisma.tenantClient as any).document.findUnique({
       where: { id },
       include: {
         versions: true,
@@ -76,11 +78,11 @@ export class DocumentsService {
 
     if (!document) throw new NotFoundException('Document not found');
 
-    const activeVersion = document.versions.sort((a, b) => b.version - a.version)[0];
+    const activeVersion = document.versions.sort((a: any, b: any) => b.version - a.version)[0];
     let downloadUrl = null;
 
     if (activeVersion && activeVersion.blobUrl) {
-      downloadUrl = await this.storage.generatePresignedUrl(activeVersion.blobUrl, activeVersion.document?.tenantId || '');
+      downloadUrl = await this.storage.generatePresignedUrl(activeVersion.blobUrl, activeVersion.documentId?.tenantId || '');
     }
 
     return {

@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../infra/prisma/prisma.service';
 import { CreateTenantDto, UpdateTenantDto } from '../dto/tenant.dto';
@@ -7,7 +8,7 @@ export class TenantService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(dto: CreateTenantDto) {
-    return this.prisma.$transaction(async (tx) => {
+    return this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const tenant = await tx.tenant.create({
         data: {
           name: dto.name,

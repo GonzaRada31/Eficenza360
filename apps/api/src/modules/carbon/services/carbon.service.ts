@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../infra/prisma/prisma.service';
 import { getTenantId } from '../../../infra/context/tenant.context';
@@ -27,7 +28,7 @@ export class CarbonService {
 
     const activities = audit.carbonActivities;
     
-    return this.prisma.$transaction(async (tx) => {
+    return this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const results = [];
       
       // Process activities sequentially for safety or use Promise.all in bulk logic

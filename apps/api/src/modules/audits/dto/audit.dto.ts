@@ -3,11 +3,11 @@ import { IsString, IsNotEmpty, IsUUID } from 'class-validator';
 export class CreateAuditDto {
   @IsString()
   @IsNotEmpty()
-  name!: string;
+  name: string;
 
   @IsUUID()
   @IsNotEmpty()
-  companyId!: string;
+  companyId: string;
 }
 
 export class UpdateAuditDto {

@@ -5,5 +5,5 @@ export class SubmitAuditDto {
   @ApiProperty({ description: 'Confirm that all required verification steps are done' })
   @IsBoolean()
   @IsNotEmpty()
-  confirmVerification!: boolean;
+  confirmVerification: boolean;
 }

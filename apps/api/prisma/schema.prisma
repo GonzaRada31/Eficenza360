@@ -8,34 +8,34 @@ datasource db {
 }
 
 model Tenant {
-  id                   String                @id @default(uuid())
-  name                 String
-  commercialName       String?               @map("commercial_name")
-  logoUrl              String?               @map("logo_url")
-  createdAt            DateTime              @default(now()) @map("created_at")
-  updatedAt            DateTime              @updatedAt @map("updated_at")
-  projects             Project[]
-  sites                Site[]
-  subscription         Subscription?
-  users                User[]
-  companies            Company[]
-  invoices             Invoice[]
-  energyAudits         EnergyAudit[]
-  energyRecords        EnergyRecord[]
-  equipmentInventories EquipmentInventory[]
-  siteMeasurements     SiteMeasurement[]
-  operationalData      OperationalData[]
-  energyAuditSnapshots EnergyAuditSnapshot[]
-  domainEventOutboxes  DomainEventOutbox[]
-  roles                Role[]
-  userRoles            UserRole[]
-  auditLogs            AuditLog[]
-  documents            Document[]
-  notifications        Notification[]
+  id                      String                   @id @default(uuid())
+  name                    String
+  commercialName          String?                  @map("commercial_name")
+  logoUrl                 String?                  @map("logo_url")
+  createdAt               DateTime                 @default(now()) @map("created_at")
+  updatedAt               DateTime                 @updatedAt @map("updated_at")
+  projects                Project[]
+  sites                   Site[]
+  subscription            Subscription?
+  users                   User[]
+  companies               Company[]
+  invoices                Invoice[]
+  energyAudits            EnergyAudit[]
+  energyRecords           EnergyRecord[]
+  equipmentInventories    EquipmentInventory[]
+  siteMeasurements        SiteMeasurement[]
+  operationalData         OperationalData[]
+  energyAuditSnapshots    EnergyAuditSnapshot[]
+  domainEventOutboxes     DomainEventOutbox[]
+  roles                   Role[]
+  userRoles               UserRole[]
+  auditLogs               AuditLog[]
+  documents               Document[]
+  notifications           Notification[]
   notificationPreferences NotificationPreference[]
-  status               TenantStatus          @default(ACTIVE)
+  status                  TenantStatus             @default(ACTIVE)
 
-  billingUsages        BillingUsage[]
+  billingUsages BillingUsage[]
 
   @@map("tenants")
 }
@@ -75,21 +75,21 @@ model Subscription {
 }
 
 model User {
-  id                  String     @id @default(uuid())
-  tenantId            String     @map("tenant_id")
-  email               String     @unique
-  passwordHash        String?    @map("password_hash")
-  fullName            String     @map("full_name")
-  role                SystemRole @default(COLLABORATOR)
-  status              UserStatus @default(ACTIVE)
-  resetToken          String?    @unique @map("reset_token")
-  resetTokenExpires   DateTime?  @map("reset_token_expires")
-  professionalLicense String?    @map("professional_license")
-  createdAt           DateTime   @default(now()) @map("created_at")
-  updatedAt           DateTime   @updatedAt @map("updated_at")
-  assignedTasks       Task[]
-  tenant              Tenant     @relation(fields: [tenantId], references: [id])
-  userRoles           UserRole[]
+  id                      String                   @id @default(uuid())
+  tenantId                String                   @map("tenant_id")
+  email                   String                   @unique
+  passwordHash            String?                  @map("password_hash")
+  fullName                String                   @map("full_name")
+  role                    SystemRole               @default(COLLABORATOR)
+  status                  UserStatus               @default(ACTIVE)
+  resetToken              String?                  @unique @map("reset_token")
+  resetTokenExpires       DateTime?                @map("reset_token_expires")
+  professionalLicense     String?                  @map("professional_license")
+  createdAt               DateTime                 @default(now()) @map("created_at")
+  updatedAt               DateTime                 @updatedAt @map("updated_at")
+  assignedTasks           Task[]
+  tenant                  Tenant                   @relation(fields: [tenantId], references: [id])
+  userRoles               UserRole[]
   notificationPreferences NotificationPreference[]
   notificationDeliveries  NotificationDelivery[]
 
@@ -246,18 +246,19 @@ model Site {
 }
 
 model EmissionFactor {
-  id              String         @id @default(uuid())
+  id              String           @id @default(uuid())
   source          String // e.g. "IPCC 2006", "DEFRA 2023"
   region          String? // e.g. "Global", "LatAm", "Argentina"
   uncertainty     Float? // Percentage uncertainty, e.g. 5.0
   type            String
-  factorValue     Float          @map("factor_value")
-  unitNumerator   String         @map("unit_numerator")
-  unitDenominator String         @map("unit_denominator")
-  validFrom       DateTime       @map("valid_from")
-  validTo         DateTime?      @map("valid_to")
+  factorValue     Float            @map("factor_value")
+  unitNumerator   String           @map("unit_numerator")
+  unitDenominator String           @map("unit_denominator")
+  validFrom       DateTime         @map("valid_from")
+  validTo         DateTime?        @map("valid_to")
   carbonRecords   CarbonRecord[]
   energyRecords   EnergyRecord[]
+  CarbonActivity  CarbonActivity[]
 
   @@map("emission_factors")
 }
@@ -471,21 +472,21 @@ model EnergyAudit {
   status    AuditStatus @default(DRAFT)
   version   Int         @default(1)
 
-  createdBy String?     @map("created_by")
-  
+  createdBy String? @map("created_by")
+
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
-  tenant          Tenant                @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  company         Company               @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
+
   // Phase 8D Specific relations
-  auditSites          EnergyAuditSite[]
-  consumptionRecords  EnergyConsumptionRecord[]
-  auditReports        EnergyAuditReport[]
-  carbonActivities    CarbonActivity[]
-  carbonReports       CarbonReport[]
+  auditSites         EnergyAuditSite[]
+  consumptionRecords EnergyConsumptionRecord[]
+  auditReports       EnergyAuditReport[]
+  carbonActivities   CarbonActivity[]
+  carbonReports      CarbonReport[]
 
   records         EnergyRecord[]
   equipment       EquipmentInventory[]
@@ -690,7 +691,7 @@ enum OutboxStatus {
 // ---------------------------------------------------------
 
 model DomainEventOutbox {
-  id        String @id @default(uuid())
+  id            String  @id @default(uuid())
   tenantId      String  @map("tenant_id")
   aggregateType String? @map("aggregate_type")
   aggregateId   String? @map("aggregate_id")
@@ -799,22 +800,22 @@ model UserRole {
 // ============================================
 
 model AuditLog {
-  id          String   @id @default(uuid())
-  tenantId    String   @map("tenant_id")
-  userId      String?  @map("user_id") // Opcional, puede ser un system event
-  
-  action      String   // e.g., 'CREATE', 'UPDATE', 'DELETE'
-  entityType  String   @map("entity_type") // e.g., 'EnergyAudit', 'User'
-  entityId    String   @map("entity_id")
-  
-  payload     Json     @db.JsonB // { before: {...}, after: {...} }
-  ipAddress   String?  @map("ip_address")
-  
-  timestamp   DateTime @default(now()) @db.Timestamptz
-  
+  id       String  @id @default(uuid())
+  tenantId String  @map("tenant_id")
+  userId   String? @map("user_id") // Opcional, puede ser un system event
+
+  action     String // e.g., 'CREATE', 'UPDATE', 'DELETE'
+  entityType String @map("entity_type") // e.g., 'EnergyAudit', 'User'
+  entityId   String @map("entity_id")
+
+  payload   Json    @db.JsonB // { before: {...}, after: {...} }
+  ipAddress String? @map("ip_address")
+
+  timestamp DateTime @default(now()) @db.Timestamptz
+
   // Relations (Soft relationships to prevent CASCADE deletions from removing audit history)
-  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
   @@index([tenantId, entityType, entityId])
   @@index([timestamp])
   @@map("audit_logs")
@@ -825,53 +826,53 @@ model AuditLog {
 // ============================================
 
 model Document {
-  id          String   @id @default(uuid())
-  tenantId    String   @map("tenant_id")
+  id          String  @id @default(uuid())
+  tenantId    String  @map("tenant_id")
   name        String
   description String?
-  category    String   // e.g., 'INVOICE', 'REPORT', 'EVIDENCE'
-  
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  category    String // e.g., 'INVOICE', 'REPORT', 'EVIDENCE'
 
-  tenant      Tenant            @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  versions    DocumentVersion[]
-  links       DocumentLink[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  tenant   Tenant            @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  versions DocumentVersion[]
+  links    DocumentLink[]
 
   @@index([tenantId])
   @@map("documents")
 }
 
 model DocumentVersion {
-  id          String   @id @default(uuid())
-  documentId  String   @map("document_id")
-  version     Int      @default(1)
-  
-  blobUrl     String?  @map("blob_url") // e.g. Azure Blob SAS URL or S3 Path
-  mimeType    String   @map("mime_type")
-  sizeBytes   Int?     @map("size_bytes")
-  fileHash    String?  @map("file_hash") // SHA-256 for immutability check
-  status      String   @default("PENDING") // PENDING, AVAILABLE, FAILED
-  
-  uploadedBy  String?  @map("uploaded_by") // userId
-  createdAt   DateTime @default(now()) @map("created_at")
+  id         String @id @default(uuid())
+  documentId String @map("document_id")
+  version    Int    @default(1)
 
-  document    Document       @relation(fields: [documentId], references: [id], onDelete: Cascade)
-  links       DocumentLink[]
+  blobUrl   String? @map("blob_url") // e.g. Azure Blob SAS URL or S3 Path
+  mimeType  String  @map("mime_type")
+  sizeBytes Int?    @map("size_bytes")
+  fileHash  String? @map("file_hash") // SHA-256 for immutability check
+  status    String  @default("PENDING") // PENDING, AVAILABLE, FAILED
+
+  uploadedBy String?  @map("uploaded_by") // userId
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  document Document       @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  links    DocumentLink[]
 
   @@unique([documentId, version])
   @@map("document_versions")
 }
 
 model DocumentLink {
-  id                String   @id @default(uuid())
-  documentId        String   @map("document_id")
-  documentVersionId String?  @map("document_version_id") 
-  
-  entityType        String   @map("entity_type") // e.g., 'EnergyAudit', 'Invoice'
-  entityId          String   @map("entity_id")
-  
-  createdAt         DateTime @default(now()) @map("created_at")
+  id                String  @id @default(uuid())
+  documentId        String  @map("document_id")
+  documentVersionId String? @map("document_version_id")
+
+  entityType String @map("entity_type") // e.g., 'EnergyAudit', 'Invoice'
+  entityId   String @map("entity_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
 
   document        Document         @relation(fields: [documentId], references: [id], onDelete: Cascade)
   documentVersion DocumentVersion? @relation(fields: [documentVersionId], references: [id], onDelete: Restrict)
@@ -885,29 +886,29 @@ model DocumentLink {
 // ============================================
 
 model Notification {
-  id          String   @id @default(uuid())
-  tenantId    String   @map("tenant_id")
-  
-  type        String   // e.g., 'SYSTEM_ALERT', 'REPORT_READY'
-  severity    String   @default("INFO") // INFO, WARNING, ERROR, SUCCESS
-  title       String
-  message     String   @db.Text
-  actionUrl   String?  @map("action_url")
-  
-  createdAt   DateTime @default(now()) @map("created_at")
+  id       String @id @default(uuid())
+  tenantId String @map("tenant_id")
 
-  tenant      Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  deliveries  NotificationDelivery[]
+  type      String // e.g., 'SYSTEM_ALERT', 'REPORT_READY'
+  severity  String  @default("INFO") // INFO, WARNING, ERROR, SUCCESS
+  title     String
+  message   String  @db.Text
+  actionUrl String? @map("action_url")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  tenant     Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  deliveries NotificationDelivery[]
 
   @@index([tenantId, createdAt])
   @@map("notifications")
 }
 
 model NotificationChannel {
-  id          String   @id @default(uuid())
-  name        String   @unique // e.g., 'IN_APP', 'EMAIL', 'WEBHOOK'
-  isActive    Boolean  @default(true) @map("is_active")
-  
+  id       String  @id @default(uuid())
+  name     String  @unique // e.g., 'IN_APP', 'EMAIL', 'WEBHOOK'
+  isActive Boolean @default(true) @map("is_active")
+
   deliveries  NotificationDelivery[]
   preferences NotificationPreference[]
 
@@ -915,39 +916,39 @@ model NotificationChannel {
 }
 
 model NotificationPreference {
-  id           String   @id @default(uuid())
-  userId       String   @map("user_id")
-  tenantId     String   @map("tenant_id")
-  channelId    String   @map("channel_id")
-  
-  isEnabled    Boolean  @default(true) @map("is_enabled")
-  createdAt    DateTime @default(now()) @map("created_at")
+  id        String @id @default(uuid())
+  userId    String @map("user_id")
+  tenantId  String @map("tenant_id")
+  channelId String @map("channel_id")
 
-  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tenant       Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  channel      NotificationChannel @relation(fields: [channelId], references: [id], onDelete: Restrict)
+  isEnabled Boolean  @default(true) @map("is_enabled")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user    User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant  Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  channel NotificationChannel @relation(fields: [channelId], references: [id], onDelete: Restrict)
 
   @@unique([userId, tenantId, channelId])
   @@map("notification_preferences")
 }
 
 model NotificationDelivery {
-  id             String   @id @default(uuid())
-  notificationId String   @map("notification_id")
-  channelId      String   @map("channel_id")
-  recipientId    String   @map("recipient_id") // userId
-  
-  status         String   @default("PENDING") // PENDING, SENT, FAILED, READ
-  readAt         DateTime? @map("read_at")
-  deliveredAt    DateTime? @map("delivered_at")
-  errorReason    String?  @map("error_reason") @db.Text
-  
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
+  id             String @id @default(uuid())
+  notificationId String @map("notification_id")
+  channelId      String @map("channel_id")
+  recipientId    String @map("recipient_id") // userId
 
-  notification   Notification        @relation(fields: [notificationId], references: [id], onDelete: Cascade)
-  channel        NotificationChannel @relation(fields: [channelId], references: [id], onDelete: Restrict)
-  recipient      User                @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+  status      String    @default("PENDING") // PENDING, SENT, FAILED, READ
+  readAt      DateTime? @map("read_at")
+  deliveredAt DateTime? @map("delivered_at")
+  errorReason String?   @map("error_reason") @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  notification Notification        @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  channel      NotificationChannel @relation(fields: [channelId], references: [id], onDelete: Restrict)
+  recipient    User                @relation(fields: [recipientId], references: [id], onDelete: Cascade)
 
   @@index([recipientId, status])
   @@map("notification_deliveries")
@@ -962,8 +963,8 @@ model EnergyAuditSite {
   location  String?
   createdAt DateTime @default(now()) @map("created_at")
 
-  audit     EnergyAudit @relation(fields: [auditId], references: [id], onDelete: Cascade)
-  records   EnergyConsumptionRecord[]
+  audit   EnergyAudit               @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  records EnergyConsumptionRecord[]
 
   @@map("energy_audit_sites")
 }
@@ -978,8 +979,8 @@ model EnergyConsumptionRecord {
   periodStart DateTime @map("period_start")
   periodEnd   DateTime @map("period_end")
 
-  audit       EnergyAudit     @relation(fields: [auditId], references: [id], onDelete: Cascade)
-  site        EnergyAuditSite @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  audit EnergyAudit     @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  site  EnergyAuditSite @relation(fields: [siteId], references: [id], onDelete: Cascade)
 
   @@map("energy_consumption_records")
 }
@@ -990,22 +991,22 @@ model EnergyAuditReport {
   documentId  String?  @map("document_id")
   generatedAt DateTime @default(now()) @map("generated_at")
 
-  audit       EnergyAudit @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  audit EnergyAudit @relation(fields: [auditId], references: [id], onDelete: Cascade)
 
   @@map("energy_audit_reports")
 }
 
 model CarbonActivity {
-  id            String   @id @default(uuid())
-  auditId       String   @map("audit_id")
-  activityType  String   @map("activity_type")
-  activityValue Float    @map("activity_value")
-  activityUnit  String   @map("activity_unit")
-  factorId      String   @map("factor_id")
+  id            String @id @default(uuid())
+  auditId       String @map("audit_id")
+  activityType  String @map("activity_type")
+  activityValue Float  @map("activity_value")
+  activityUnit  String @map("activity_unit")
+  factorId      String @map("factor_id")
 
-  audit         EnergyAudit    @relation(fields: [auditId], references: [id], onDelete: Cascade)
-  factor        EmissionFactor @relation(fields: [factorId], references: [id], onDelete: Restrict)
-  calculations  CarbonCalculation[]
+  audit        EnergyAudit         @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  factor       EmissionFactor      @relation(fields: [factorId], references: [id], onDelete: Restrict)
+  calculations CarbonCalculation[]
 
   @@map("carbon_activities")
 }
@@ -1017,7 +1018,7 @@ model CarbonCalculation {
   unit         String
   calculatedAt DateTime @default(now()) @map("calculated_at")
 
-  activity     CarbonActivity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  activity CarbonActivity @relation(fields: [activityId], references: [id], onDelete: Cascade)
 
   @@map("carbon_calculations")
 }
@@ -1028,7 +1029,7 @@ model CarbonReport {
   totalEmissions Float    @map("total_emissions")
   generatedAt    DateTime @default(now()) @map("generated_at")
 
-  audit          EnergyAudit @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  audit EnergyAudit @relation(fields: [auditId], references: [id], onDelete: Cascade)
 
   @@map("carbon_reports")
 }
@@ -1039,7 +1040,7 @@ model CarbonReport {
 
 model EventProcessingLog {
   id          String   @id @default(uuid())
-  eventId     String   @map("event_id") @unique
+  eventId     String   @unique @map("event_id")
   worker      String
   processedAt DateTime @default(now()) @map("processed_at")
 
@@ -1047,13 +1048,13 @@ model EventProcessingLog {
 }
 
 model BillingUsage {
-  id          String   @id @default(uuid())
-  tenantId    String   @map("tenant_id")
-  metricName  String   @map("metric_name")
-  value       Float
-  loggedAt    DateTime @default(now()) @map("logged_at")
+  id         String   @id @default(uuid())
+  tenantId   String   @map("tenant_id")
+  metricName String   @map("metric_name")
+  value      Float
+  loggedAt   DateTime @default(now()) @map("logged_at")
 
-  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId, metricName])
   @@map("billing_usages")

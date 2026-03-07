@@ -1,7 +1,8 @@
+import { Prisma } from '@prisma/client';
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '../../../infra/prisma/prisma.service';
-import { queues } from '../../../infra/queues/queues';
-import { EVENT_ROUTING_MAP } from '../../../infra/queues/queue.constants';
+import { PrismaService } from '../../infra/prisma/prisma.service';
+import { queues } from '../../infra/queues/queues';
+import { EVENT_ROUTING_MAP } from '../../infra/queues/queue.constants';
 
 @Injectable()
 export class OutboxService {
@@ -12,7 +13,7 @@ export class OutboxService {
   async processOutbox() {
     try {
       // 1. Transaction to select and lock records
-      const processedIds = await this.prisma.$transaction(async (tx) => {
+      const processedIds = await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
         // Find 100 unpublished events
         const events = await tx.$queryRaw<any[]>`
           SELECT * FROM "DomainEventOutbox"

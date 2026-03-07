@@ -1,5 +1,5 @@
 import { Injectable, Logger, Inject } from '@nestjs/common';
-import { IStorageProvider, STORAGE_PROVIDER, StorageUploadResult } from '../../infra/storage/storage.provider.interface';
+import { STORAGE_PROVIDER, type IStorageProvider, type StorageUploadResult } from '../../infra/storage/storage.provider.interface';
 
 @Injectable()
 export class AttachmentsService {

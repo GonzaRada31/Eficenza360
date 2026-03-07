@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { NotificationPreferencesData } from './types';
+import type { NotificationPreferencesData } from './types';
 
 const mockPreferences: NotificationPreferencesData = {
     id: 'pref-1',
@@ -33,7 +33,7 @@ export const useNotificationPreferences = () => {
     });
 
     const mutation = useMutation({
-        mutationFn: async (updatedData: Partial<NotificationPreferencesData>) => {
+        mutationFn: async (_updatedData: Partial<NotificationPreferencesData>) => {
             // await api.patch('/notifications/preferences', updatedData);
             return new Promise(resolve => setTimeout(resolve, 500));
         },

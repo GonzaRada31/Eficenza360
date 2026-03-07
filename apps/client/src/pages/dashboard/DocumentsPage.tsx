@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { PageContainer } from '../../components/layout/PageContainer';
 import { DocumentList } from '../../components/documents/DocumentList';
 import { DocumentUploader } from '../../components/documents/DocumentUploader';

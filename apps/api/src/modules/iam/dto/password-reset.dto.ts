@@ -3,8 +3,8 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class RequestPasswordResetDto {
   @ApiProperty({
-    description: 'Correo electrónico para recuperación',
-    example: 'usuario@eficenza.com',
+  description: 'Correo electrónico para recuperación',
+  example: 'usuario@eficenza.com',
   })
   @IsEmail()
   @IsNotEmpty()
@@ -18,8 +18,8 @@ export class ResetPasswordDto {
   token: string;
 
   @ApiProperty({
-    description: 'Nueva contraseña (min 6 caracteres)',
-    example: 'NuevaPassword123!',
+  description: 'Nueva contraseña (min 6 caracteres)',
+  example: 'NuevaPassword123!',
   })
   @IsString()
   @IsNotEmpty()

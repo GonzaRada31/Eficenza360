@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
-import { useDropzone, FileRejection, DropzoneOptions } from 'react-dropzone';
-import { UploadCloud, File, X, AlertCircle } from 'lucide-react';
+import { useDropzone, type FileRejection } from 'react-dropzone';
+import { UploadCloud, AlertCircle } from 'lucide-react';
 
 export interface DocumentDropzoneProps {
     onFileAccepted: (file: File) => void;

@@ -4,7 +4,7 @@ import { QUEUE_NAMES } from '../infra/queues/queue.constants';
 import { Logger } from '@nestjs/common';
 
 const logger = new Logger('ResetQueuesScript');
-const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379');
+const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379') as any;
 
 async function main() {
   logger.log('Starting BullMQ Queue Reset...');

@@ -1,4 +1,4 @@
-import { AuditLog } from '../types/audit';
+import type { AuditLog } from '../types/audit';
 
 export const MOCK_AUDIT_LOGS: AuditLog[] = [
     {

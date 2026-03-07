@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { AuditLog } from '../../types/audit';
+import { type AuditLog } from '../../types/audit';
 import { X } from 'lucide-react';
 
 interface AuditLogDrawerProps {

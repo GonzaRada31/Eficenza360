@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
@@ -29,7 +30,7 @@ async function main() {
 
   console.log('Creating initial tenant and admin user...');
 
-  const result = await prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     // 1. Create Tenant
     const tenant = await tx.tenant.create({
       data: {

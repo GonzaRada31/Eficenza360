@@ -2,7 +2,7 @@ import { IsString, IsOptional, IsUrl } from 'class-validator';
 
 export class CreateTenantDto {
   @IsString()
-  name!: string;
+  name: string;
 
   @IsString()
   @IsOptional()

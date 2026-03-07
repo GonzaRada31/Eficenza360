@@ -9,7 +9,7 @@ import DocumentIntelligence, {
 } from '@azure-rest/ai-document-intelligence';
 import { PollerLike, OperationState } from '@azure/core-lro';
 import { DefaultAzureCredential } from '@azure/identity';
-import { IStorageProvider, STORAGE_PROVIDER } from '../../infra/storage/storage.provider.interface';
+import { STORAGE_PROVIDER, type IStorageProvider } from '../../infra/storage/storage.provider.interface';
 
 @Injectable()
 export class AzureInvoiceService {

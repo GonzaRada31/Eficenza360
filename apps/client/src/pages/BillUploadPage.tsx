@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { BillUploadForm } from '../components/BillUploadForm';
 
 export const BillUploadPage: React.FC = () => {

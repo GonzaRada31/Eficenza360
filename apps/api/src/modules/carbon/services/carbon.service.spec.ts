@@ -10,8 +10,8 @@ jest.mock('../../../infra/context/tenant.context', () => ({
 
 describe('CarbonService', () => {
   let service: CarbonService;
-  let mockPrismaService = {
-    $transaction: jest.fn(cb => cb(mockPrismaService)),
+  let mockPrismaService: any = {
+    $transaction: jest.fn((cb: any) => cb(mockPrismaService)),
     tenantClient: {
       energyAudit: {
         findUnique: jest.fn().mockResolvedValue({

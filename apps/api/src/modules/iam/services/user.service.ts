@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../infra/prisma/prisma.service';
 import { CreateUserDto } from '../dto/auth.dto';
@@ -11,7 +12,7 @@ export class UserService {
     const passwordHash = await argon2.hash(dto.password);
 
     // Run in a transaction to ensure User and Outbox event are atomic
-    return this.prisma.$transaction(async (tx) => {
+    return this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const user = await tx.user.create({
         data: {
           email: dto.email,

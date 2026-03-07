@@ -3,28 +3,28 @@ import { IsString, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 export class PresignDocumentDto {
   @IsString()
   @IsNotEmpty()
-  fileName!: string;
+  fileName: string;
 
   @IsString()
   @IsNotEmpty()
-  contentType!: string;
+  contentType: string;
 }
 
 export class CreateDocumentDto {
   @IsString()
   @IsNotEmpty()
-  name!: string;
+  name: string;
 
   @IsString()
   @IsNotEmpty()
-  mimeType!: string;
+  mimeType: string;
 
   @IsNumber()
-  size!: number;
+  size: number;
 
   @IsString()
   @IsNotEmpty()
-  s3Key!: string;
+  s3Key: string;
 
   @IsString()
   @IsOptional()

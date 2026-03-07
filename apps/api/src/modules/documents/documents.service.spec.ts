@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DocumentsService } from './documents.service';
-import { PrismaService } from '../../../infra/prisma/prisma.service';
-import { S3StorageAdapter } from '../../../infra/storage/s3.adapter';
+import { PrismaService } from '../../infra/prisma/prisma.service';
+import { STORAGE_PROVIDER } from '../../infra/storage/storage.provider.interface';
 
-jest.mock('../../../infra/context/tenant.context', () => ({
+jest.mock('../../infra/context/tenant.context', () => ({
   getTenantId: jest.fn(() => 'tenant-123'),
   getCurrentUserId: jest.fn(() => 'user-123'),
 }));
@@ -11,7 +11,7 @@ jest.mock('../../../infra/context/tenant.context', () => ({
 describe('DocumentsService', () => {
   let service: DocumentsService;
   
-  const mockPrismaService = {
+  const mockPrismaService: any = {
     $transaction: jest.fn(cb => cb(mockPrismaService)),
     document: { create: jest.fn().mockResolvedValue({ id: 'doc-1' }) },
     documentVersion: { create: jest.fn() },
@@ -28,7 +28,7 @@ describe('DocumentsService', () => {
       providers: [
         DocumentsService,
         { provide: PrismaService, useValue: mockPrismaService },
-        { provide: S3StorageAdapter, useValue: mockS3Adapter },
+        { provide: STORAGE_PROVIDER, useValue: mockS3Adapter },
       ],
     }).compile();
 
