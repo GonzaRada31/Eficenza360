@@ -20,7 +20,7 @@ export class UserService {
           fullName: dto.fullName,
           tenantId: currentTenantId,
           status: 'ACTIVE',
-        }
+        },
       });
 
       if (dto.roleId) {
@@ -29,15 +29,15 @@ export class UserService {
             userId: user.id,
             roleId: dto.roleId,
             tenantId: currentTenantId,
-          }
+          },
         });
-        
+
         await tx.domainEventOutbox.create({
           data: {
             tenantId: currentTenantId,
             eventType: 'ROLE_ASSIGNED',
-            payload: { userId: user.id, roleId: dto.roleId }
-          }
+            payload: { userId: user.id, roleId: dto.roleId },
+          },
         });
       }
 
@@ -45,8 +45,8 @@ export class UserService {
         data: {
           tenantId: currentTenantId,
           eventType: 'USER_CREATED',
-          payload: { userId: user.id, email: user.email }
-        }
+          payload: { userId: user.id, email: user.email },
+        },
       });
 
       return user;
@@ -56,7 +56,13 @@ export class UserService {
   async findAll() {
     // Automatically scoped to tenant context via Prisma Proxy Extension!
     return this.prisma.tenantClient.user.findMany({
-      select: { id: true, email: true, fullName: true, status: true, role: true }
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        status: true,
+        role: true,
+      },
     });
   }
 }

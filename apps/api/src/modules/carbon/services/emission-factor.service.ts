@@ -16,7 +16,9 @@ export class EmissionFactorService {
     });
 
     if (!factor) {
-      throw new NotFoundException(`No valid emission factor found for type ${activityType} in year ${year}`);
+      throw new NotFoundException(
+        `No valid emission factor found for type ${activityType} in year ${year}`,
+      );
     }
 
     return factor;

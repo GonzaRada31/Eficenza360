@@ -13,12 +13,11 @@ jest.mock('../../src/workers/idempotency', () => {
     IdempotencyValidator: jest.fn().mockImplementation(() => ({
       hasProcessed: jest.fn().mockResolvedValue(false),
       markProcessed: jest.fn().mockResolvedValue(true),
-    }))
+    })),
   };
 });
 
 describe('Workers Processing Flow (Integration)', () => {
-  
   it('auditWorker should handle AUDIT_SUBMITTED idempotently and call billing/notification layers', async () => {
     const mockJob = {
       data: {
@@ -26,16 +25,16 @@ describe('Workers Processing Flow (Integration)', () => {
         tenantId: 'tenant-1',
         eventType: 'AUDIT_SUBMITTED',
         payload: { auditId: 'audit-1' },
-      }
+      },
     } as Job;
 
     // Direct invocation of the processor function assigned to the worker
-    const processor = (auditWorker as any).processFn; 
-    
+    const processor = (auditWorker as any).processFn;
+
     if (processor) {
-        await processor(mockJob);
+      await processor(mockJob);
     }
-    
+
     // Test passes structurally based on mock implementation
     expect(true).toBe(true);
   });

@@ -11,21 +11,30 @@ export const jobsFailedTotal = meter.createCounter('jobs_failed_total', {
 });
 
 export const queueLatency = meter.createHistogram('queue_latency', {
-  description: 'Time elapsed between event creation and worker processing start (ms)',
+  description:
+    'Time elapsed between event creation and worker processing start (ms)',
   unit: 'ms',
 });
 
-export const workerExecutionTime = meter.createHistogram('worker_execution_time', {
-  description: 'Duration of the worker processing logic (ms)',
-  unit: 'ms',
-});
+export const workerExecutionTime = meter.createHistogram(
+  'worker_execution_time',
+  {
+    description: 'Duration of the worker processing logic (ms)',
+    unit: 'ms',
+  },
+);
 
-export function recordWorkerMetrics(queueName: string, duration: number, success: boolean, latencyMs?: number) {
+export function recordWorkerMetrics(
+  queueName: string,
+  duration: number,
+  success: boolean,
+  latencyMs?: number,
+) {
   const attributes = { queue: queueName };
-  
+
   workerExecutionTime.record(duration, attributes);
   if (latencyMs) queueLatency.record(latencyMs, attributes);
-  
+
   if (success) {
     jobsProcessedTotal.add(1, attributes);
   } else {

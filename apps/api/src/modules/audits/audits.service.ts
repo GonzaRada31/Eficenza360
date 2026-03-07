@@ -2,7 +2,10 @@ import { Prisma } from '@prisma/client';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../infra/prisma/prisma.service';
 import { CreateAuditDto, UpdateAuditDto } from './dto/audit.dto';
-import { getTenantId, getCurrentUserId } from '../../infra/context/tenant.context';
+import {
+  getTenantId,
+  getCurrentUserId,
+} from '../../infra/context/tenant.context';
 
 @Injectable()
 export class AuditsService {
@@ -21,7 +24,7 @@ export class AuditsService {
           year: new Date().getFullYear(),
           status: 'DRAFT',
           createdBy: userId,
-        }
+        },
       });
 
       await tx.domainEventOutbox.create({
@@ -30,8 +33,8 @@ export class AuditsService {
           aggregateType: 'EnergyAudit',
           aggregateId: audit.id,
           eventType: 'AUDIT_CREATED',
-          payload: { auditId: audit.id, name: audit.name }
-        }
+          payload: { auditId: audit.id, name: audit.name },
+        },
       });
 
       return audit;
@@ -42,7 +45,7 @@ export class AuditsService {
     return this.prisma.tenantClient.energyAudit.findMany({
       include: {
         auditSites: true,
-      }
+      },
     });
   }
 
@@ -52,9 +55,9 @@ export class AuditsService {
       include: {
         auditSites: true,
         consumptionRecords: true,
-      }
+      },
     });
-    
+
     if (!audit) throw new NotFoundException('Audit not found');
     return audit;
   }
@@ -62,19 +65,19 @@ export class AuditsService {
   async update(id: string, dto: UpdateAuditDto) {
     return this.prisma.tenantClient.energyAudit.update({
       where: { id },
-      data: dto
+      data: dto,
     });
   }
 
   async submit(id: string) {
     const tenantId = getTenantId();
-    
+
     return this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Intentionally bypassed extension via `tx` to showcase standard transactional queries
       // Usually, we'd use tx.energyAudit with strict explicit tenant checks or custom middleware
       const audit = await tx.energyAudit.update({
         where: { id_tenantId: { id, tenantId: tenantId! } },
-        data: { status: 'SUBMITTED' as any }
+        data: { status: 'SUBMITTED' as any },
       });
 
       await tx.domainEventOutbox.create({
@@ -83,8 +86,8 @@ export class AuditsService {
           aggregateType: 'EnergyAudit',
           aggregateId: audit.id,
           eventType: 'AUDIT_SUBMITTED',
-          payload: { auditId: audit.id }
-        }
+          payload: { auditId: audit.id },
+        },
       });
 
       return audit;

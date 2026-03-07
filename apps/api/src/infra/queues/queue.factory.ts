@@ -1,9 +1,12 @@
 import { Queue, Worker, QueueEvents, DefaultJobOptions } from 'bullmq';
 import IORedis from 'ioredis';
 
-const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379', {
-  maxRetriesPerRequest: null,
-});
+const connection = new IORedis(
+  process.env.REDIS_URL || 'redis://localhost:6379',
+  {
+    maxRetriesPerRequest: null,
+  },
+);
 
 export const defaultQueueOptions: DefaultJobOptions = {
   attempts: 5,
@@ -17,9 +20,9 @@ export const defaultQueueOptions: DefaultJobOptions = {
 
 export class QueueFactory {
   static createQueue(name: string): Queue {
-    return new Queue(name, { 
+    return new Queue(name, {
       connection,
-      defaultJobOptions: defaultQueueOptions
+      defaultJobOptions: defaultQueueOptions,
     } as any);
   }
 
@@ -28,7 +31,7 @@ export class QueueFactory {
       connection,
       concurrency: options.concurrency || 5,
       ...options,
-    } as any);
+    });
   }
 
   static createQueueEvents(name: string): QueueEvents {

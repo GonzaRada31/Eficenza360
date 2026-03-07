@@ -1,4 +1,10 @@
-import { IsString, IsNotEmpty, IsNumber, IsOptional, Min } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  Min,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateDocumentDto {
@@ -17,7 +23,10 @@ export class CreateDocumentDto {
   @Min(1)
   size: number;
 
-  @ApiProperty({ example: 'tenant-123/timestamp-invoice-2026.pdf', description: 'Internal S3 storage locator path' })
+  @ApiProperty({
+    example: 'tenant-123/timestamp-invoice-2026.pdf',
+    description: 'Internal S3 storage locator path',
+  })
   @IsString()
   @IsNotEmpty()
   s3Key: string;

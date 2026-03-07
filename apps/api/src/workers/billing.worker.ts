@@ -23,5 +23,5 @@ export const billingWorker = QueueFactory.createWorker(
     }
 
     await idempotency.markProcessed(eventId, 'BillingWorker');
-  }
+  },
 );

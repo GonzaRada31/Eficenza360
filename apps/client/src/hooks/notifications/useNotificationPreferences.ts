@@ -33,8 +33,9 @@ export const useNotificationPreferences = () => {
     });
 
     const mutation = useMutation({
-        mutationFn: async (_updatedData: Partial<NotificationPreferencesData>) => {
+        mutationFn: async (updatedData: Partial<NotificationPreferencesData>) => {
             // await api.patch('/notifications/preferences', updatedData);
+            console.debug('Updating preferences:', updatedData);
             return new Promise(resolve => setTimeout(resolve, 500));
         },
         onSuccess: () => {

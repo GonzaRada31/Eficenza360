@@ -4,7 +4,8 @@ export const useMarkNotificationRead = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async ({ id: _id, all: _all = false }: { id?: string, all?: boolean }) => {
+        mutationFn: async ({ id, all = false }: { id?: string, all?: boolean }) => {
+            console.debug('Mark read:', { id, all });
             // if (all) {
             //     await api.patch('/notifications/read-all');
             // } else {

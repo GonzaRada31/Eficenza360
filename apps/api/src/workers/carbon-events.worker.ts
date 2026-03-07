@@ -23,5 +23,5 @@ export const carbonWorker = QueueFactory.createWorker(
     }
 
     await idempotency.markProcessed(eventId, 'CarbonWorker');
-  }
+  },
 );

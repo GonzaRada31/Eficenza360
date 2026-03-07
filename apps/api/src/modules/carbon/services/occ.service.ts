@@ -16,8 +16,10 @@ export interface OccCalculationResult {
 
 @Injectable()
 export class OccService {
-  
-  processActivity(activity: OccActivityRequest, factor: EmissionFactor): OccCalculationResult {
+  processActivity(
+    activity: OccActivityRequest,
+    factor: EmissionFactor,
+  ): OccCalculationResult {
     const emissions = this.calculateEmission(activity, factor);
     return {
       activityId: activity.activityId,
@@ -26,14 +28,26 @@ export class OccService {
     };
   }
 
-  calculateEmission(activity: OccActivityRequest, factor: EmissionFactor): number {
+  calculateEmission(
+    activity: OccActivityRequest,
+    factor: EmissionFactor,
+  ): number {
     switch (activity.activityType) {
       case 'electricity':
-        return this.calculateElectricityEmissions(activity.activityValue, factor.factorValue);
+        return this.calculateElectricityEmissions(
+          activity.activityValue,
+          factor.factorValue,
+        );
       case 'fuel':
-        return this.calculateFuelEmissions(activity.activityValue, factor.factorValue);
+        return this.calculateFuelEmissions(
+          activity.activityValue,
+          factor.factorValue,
+        );
       case 'transport':
-        return this.calculateTransportEmissions(activity.activityValue, factor.factorValue);
+        return this.calculateTransportEmissions(
+          activity.activityValue,
+          factor.factorValue,
+        );
       default:
         // Generic fallback multiplication
         return activity.activityValue * factor.factorValue;
@@ -44,7 +58,10 @@ export class OccService {
     return calculations.reduce((acc, curr) => acc + curr.emissions, 0);
   }
 
-  private calculateElectricityEmissions(kwh: number, factorValue: number): number {
+  private calculateElectricityEmissions(
+    kwh: number,
+    factorValue: number,
+  ): number {
     return kwh * factorValue;
   }
 
@@ -52,7 +69,10 @@ export class OccService {
     return liters * factorValue;
   }
 
-  private calculateTransportEmissions(distance: number, factorValue: number): number {
+  private calculateTransportEmissions(
+    distance: number,
+    factorValue: number,
+  ): number {
     // specific business logic for transport
     return distance * factorValue;
   }

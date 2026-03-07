@@ -13,7 +13,7 @@ export function extendedPrismaClient(client: PrismaClient) {
           }
 
           if (operation === 'create' || operation === 'createMany') {
-             return query(args);
+            return query(args);
           }
 
           if (tenantId) {

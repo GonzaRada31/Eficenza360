@@ -8,14 +8,16 @@ export class BillingService {
   constructor(private readonly prisma: PrismaService) {}
 
   async recordUsage(tenantId: string, metricName: string, value: number = 1) {
-    this.logger.log(`Recording Usage: ${metricName}=${value} for Tenant ${tenantId}`);
+    this.logger.log(
+      `Recording Usage: ${metricName}=${value} for Tenant ${tenantId}`,
+    );
 
     return this.prisma.billingUsage.create({
       data: {
         tenantId,
         metricName,
         value,
-      }
+      },
     });
   }
 }

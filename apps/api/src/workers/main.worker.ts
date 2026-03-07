@@ -21,12 +21,14 @@ async function bootstrap() {
     billingWorker,
   ];
 
-  logger.log(`${workers.length} workers registered and listening to external Redis queues.`);
+  logger.log(
+    `${workers.length} workers registered and listening to external Redis queues.`,
+  );
 
   // Graceful shutdown hooks
   const shutdown = async () => {
     logger.log('Shutting down workers gracefully...');
-    await Promise.all(workers.map(w => w.close()));
+    await Promise.all(workers.map((w) => w.close()));
     process.exit(0);
   };
 

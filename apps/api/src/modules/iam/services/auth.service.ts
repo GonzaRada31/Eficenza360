@@ -15,9 +15,13 @@ export class AuthService {
       where: { email },
       include: {
         userRoles: {
-          include: { role: { include: { permissions: { include: { permission: true } } } } }
-        }
-      }
+          include: {
+            role: {
+              include: { permissions: { include: { permission: true } } },
+            },
+          },
+        },
+      },
     });
 
     if (!user || !user.passwordHash) {
@@ -30,20 +34,27 @@ export class AuthService {
     }
 
     // Resolve Roles & Permissions for RBAC token payload
-    const roles = user.userRoles.map(ur => ur.role.name);
-    const permissionsInfo = user.userRoles.flatMap(ur => ur.role.permissions.map(rp => rp.permission.name));
+    const roles = user.userRoles.map((ur) => ur.role.name);
+    const permissionsInfo = user.userRoles.flatMap((ur) =>
+      ur.role.permissions.map((rp) => rp.permission.name),
+    );
     const permissions = [...new Set(permissionsInfo)];
 
     const payload = {
       userId: user.id,
       tenantId: user.tenantId,
       roles,
-      permissions
+      permissions,
     };
 
     return {
-      accessToken: await this.jwtService.signAsync(payload, { expiresIn: '15m' }),
-      refreshToken: await this.jwtService.signAsync({ userId: user.id }, { expiresIn: '7d' })
+      accessToken: await this.jwtService.signAsync(payload, {
+        expiresIn: '15m',
+      }),
+      refreshToken: await this.jwtService.signAsync(
+        { userId: user.id },
+        { expiresIn: '7d' },
+      ),
     };
   }
 }

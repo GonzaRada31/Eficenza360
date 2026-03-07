@@ -6,7 +6,7 @@ export class IdempotencyValidator {
   // Returns true if the event has already been processed by this worker
   async hasProcessed(eventId: string, workerName: string): Promise<boolean> {
     const existing = await this.prisma.eventProcessingLog.findUnique({
-      where: { eventId }
+      where: { eventId },
     });
     return !!existing;
   }
@@ -17,7 +17,7 @@ export class IdempotencyValidator {
       data: {
         eventId,
         worker: workerName,
-      }
+      },
     });
   }
 }

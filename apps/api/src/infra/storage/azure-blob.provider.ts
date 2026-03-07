@@ -7,7 +7,10 @@ import {
   SASProtocol,
 } from '@azure/storage-blob';
 import { DefaultAzureCredential } from '@azure/identity';
-import { IStorageProvider, StorageUploadResult } from './storage.provider.interface';
+import {
+  IStorageProvider,
+  StorageUploadResult,
+} from './storage.provider.interface';
 
 @Injectable()
 export class AzureBlobProvider implements IStorageProvider {
@@ -17,8 +20,11 @@ export class AzureBlobProvider implements IStorageProvider {
   constructor(private configService: ConfigService) {}
 
   private getBlobServiceClient(): BlobServiceClient {
-    const accountUrl = this.configService.get<string>('AZURE_STORAGE_ACCOUNT_URL');
-    if (!accountUrl) throw new Error('AZURE_STORAGE_ACCOUNT_URL not configured');
+    const accountUrl = this.configService.get<string>(
+      'AZURE_STORAGE_ACCOUNT_URL',
+    );
+    if (!accountUrl)
+      throw new Error('AZURE_STORAGE_ACCOUNT_URL not configured');
 
     const credential = new DefaultAzureCredential();
     return new BlobServiceClient(accountUrl, credential);
@@ -31,8 +37,10 @@ export class AzureBlobProvider implements IStorageProvider {
     prefix: string, // e.g., 'tenant-id/sub-id'
   ): Promise<StorageUploadResult> {
     const blobServiceClient = this.getBlobServiceClient();
-    const containerClient = blobServiceClient.getContainerClient(this.containerName);
-    
+    const containerClient = blobServiceClient.getContainerClient(
+      this.containerName,
+    );
+
     await containerClient.createIfNotExists();
 
     const sanitizedFilename = originalFilename.replace(/[^a-zA-Z0-9.-]/g, '_');
@@ -47,7 +55,10 @@ export class AzureBlobProvider implements IStorageProvider {
       });
     } catch (error: unknown) {
       const err = error as Error;
-      this.logger.error(`Failed to upload blob '${blobName}': ${err.message}`, err.stack);
+      this.logger.error(
+        `Failed to upload blob '${blobName}': ${err.message}`,
+        err.stack,
+      );
       throw new Error(`Upload Error: ${err.message}`);
     }
 
@@ -69,7 +80,9 @@ export class AzureBlobProvider implements IStorageProvider {
     }
 
     const blobServiceClient = this.getBlobServiceClient();
-    const containerClient = blobServiceClient.getContainerClient(this.containerName);
+    const containerClient = blobServiceClient.getContainerClient(
+      this.containerName,
+    );
     const blobClient = containerClient.getBlockBlobClient(blobName);
 
     try {
@@ -77,12 +90,18 @@ export class AzureBlobProvider implements IStorageProvider {
       await blobClient.deleteIfExists();
     } catch (error: unknown) {
       const err = error as Error;
-      this.logger.error(`Failed to delete blob '${blobName}': ${err.message}`, err.stack);
+      this.logger.error(
+        `Failed to delete blob '${blobName}': ${err.message}`,
+        err.stack,
+      );
       throw new Error(`Delete Error: ${err.message}`);
     }
   }
 
-  async generatePresignedUrl(blobName: string, prefix: string): Promise<string> {
+  async generatePresignedUrl(
+    blobName: string,
+    prefix: string,
+  ): Promise<string> {
     if (!blobName.startsWith(`${prefix}/`)) {
       throw new Error('Access Denied: Isolation rule violation');
     }

@@ -26,5 +26,5 @@ export const documentWorker = QueueFactory.createWorker(
     }
 
     await idempotency.markProcessed(eventId, 'DocumentWorker');
-  }
+  },
 );

@@ -15,7 +15,7 @@ export class TenantService {
           commercialName: dto.commercialName,
           logoUrl: dto.logoUrl,
           status: 'ACTIVE',
-        }
+        },
       });
 
       // Default roles provisioning
@@ -25,15 +25,15 @@ export class TenantService {
           name: 'Admin',
           description: 'Full administrative access',
           isSystem: true,
-        }
+        },
       });
 
       await tx.domainEventOutbox.create({
         data: {
           tenantId: tenant.id, // Emitted context is the new tenant
           eventType: 'TENANT_CREATED',
-          payload: { tenantId: tenant.id, name: tenant.name }
-        }
+          payload: { tenantId: tenant.id, name: tenant.name },
+        },
       });
 
       return tenant;
@@ -45,7 +45,9 @@ export class TenantService {
   }
 
   async findOne(id: string) {
-    const tenant = await this.prisma.tenantClient.tenant.findUnique({ where: { id } });
+    const tenant = await this.prisma.tenantClient.tenant.findUnique({
+      where: { id },
+    });
     if (!tenant) throw new NotFoundException('Tenant not found');
     return tenant;
   }

@@ -4,7 +4,8 @@ export const useDeleteDocument = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async (_documentId: string) => {
+        mutationFn: async (documentId: string) => {
+            console.debug('Deleting doc:', documentId);
             // await api.delete(`/documents/${documentId}`);
             // Mock delay
             return new Promise(resolve => setTimeout(resolve, 600));

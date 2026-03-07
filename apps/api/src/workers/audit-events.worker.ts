@@ -29,15 +29,19 @@ export const auditWorker = QueueFactory.createWorker(
     // 2. Domain Action
     if (eventType === 'AUDIT_SUBMITTED') {
       await billing.recordUsage(tenantId, 'audits_processed', 1);
-      await notifications.notifyTenantAdmin(tenantId, 'Audit Submitted', `Audit ${payload.auditId} has been submitted for review`);
+      await notifications.notifyTenantAdmin(
+        tenantId,
+        'Audit Submitted',
+        `Audit ${payload.auditId} has been submitted for review`,
+      );
     }
 
     // 3. Mark processed
     await idempotency.markProcessed(eventId, 'AuditWorker');
-  }
+  },
 );
 
-auditWorker.on('completed', job => {
+auditWorker.on('completed', (job) => {
   logger.log(`Job with id ${job.id} has been completed`);
 });
 auditWorker.on('failed', (job, err) => {

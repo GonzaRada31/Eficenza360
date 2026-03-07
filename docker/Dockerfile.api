@@ -1,0 +1,54 @@
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Enable corepack for proper package manager version
+RUN corepack enable
+
+# Copy root configurations
+COPY package.json package-lock.json turbo.json ./
+COPY tsconfig.json ./
+
+# Copy apps and packages
+COPY apps/api ./apps/api/
+COPY apps/client ./apps/client/
+COPY packages ./packages/
+
+# Install dependencies
+RUN npm ci
+
+# Generate Prisma Client
+RUN cd apps/api && npx prisma generate
+
+# Build the API
+RUN npm run build --workspace=apps/api
+
+# -----------------
+# Production Runner
+# -----------------
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=3000
+
+# Install OpenSSL for Prisma
+RUN apk add --no-cache openssl
+
+# Don't run production as root
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nestjs
+
+# Copy essential files
+COPY --from=builder --chown=nestjs:nodejs /app/package.json ./
+COPY --from=builder --chown=nestjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nestjs:nodejs /app/apps/api/node_modules ./apps/api/node_modules
+COPY --from=builder --chown=nestjs:nodejs /app/apps/api/dist ./apps/api/dist
+COPY --from=builder --chown=nestjs:nodejs /app/apps/api/package.json ./apps/api/
+COPY --from=builder --chown=nestjs:nodejs /app/apps/api/prisma ./apps/api/prisma
+
+USER nestjs
+
+EXPOSE 3000
+
+CMD ["node", "apps/api/dist/main.js"]

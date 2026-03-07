@@ -12,7 +12,10 @@ export class PresignUploadDto {
   @IsNotEmpty()
   mimeType: string;
 
-  @ApiProperty({ example: 1048576, description: 'File size in bytes (must be > 0)' })
+  @ApiProperty({
+    example: 1048576,
+    description: 'File size in bytes (must be > 0)',
+  })
   @IsNumber()
   @Min(1)
   size: number;

@@ -44,8 +44,8 @@ export class ConfirmInvoiceDto {
   unit?: string;
 
   @ApiProperty({
-  enum: ServiceType,
-  description: 'Service type (loose string allowed, normalized on backend)',
+    enum: ServiceType,
+    description: 'Service type (loose string allowed, normalized on backend)',
   })
   @IsString()
   @IsOptional() // Make it optional to allow default fallback

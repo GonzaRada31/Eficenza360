@@ -1,5 +1,9 @@
 import { Injectable, Logger, Inject } from '@nestjs/common';
-import { STORAGE_PROVIDER, type IStorageProvider, type StorageUploadResult } from '../../infra/storage/storage.provider.interface';
+import {
+  STORAGE_PROVIDER,
+  type IStorageProvider,
+  type StorageUploadResult,
+} from '../../infra/storage/storage.provider.interface';
 
 @Injectable()
 export class AttachmentsService {
@@ -17,7 +21,12 @@ export class AttachmentsService {
     subtaskId: string,
   ): Promise<StorageUploadResult> {
     const prefix = `${tenantId}/${subtaskId}`;
-    return this.storage.uploadFile(fileBuffer, originalFilename, mimeType, prefix);
+    return this.storage.uploadFile(
+      fileBuffer,
+      originalFilename,
+      mimeType,
+      prefix,
+    );
   }
 
   async deleteFile(blobName: string, tenantId: string): Promise<void> {

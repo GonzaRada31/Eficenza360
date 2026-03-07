@@ -6,7 +6,9 @@ const logger = new Logger('ResetDataScript');
 
 async function main() {
   logger.log('Starting SAFE Database Reset...');
-  logger.warn('WARNING: This will delete transaction data (Audits, Carbon, Docs, Billing, Queues).');
+  logger.warn(
+    'WARNING: This will delete transaction data (Audits, Carbon, Docs, Billing, Queues).',
+  );
   logger.log('INFO: Tenants, Users, Roles, and Permissions will be PRESERVED.');
 
   try {

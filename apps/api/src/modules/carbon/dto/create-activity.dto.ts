@@ -7,7 +7,10 @@ export class CreateActivityDto {
   @IsNotEmpty()
   activityType: string;
 
-  @ApiProperty({ example: 1500.5, description: 'Value of the activity (must be > 0)' })
+  @ApiProperty({
+    example: 1500.5,
+    description: 'Value of the activity (must be > 0)',
+  })
   @IsNumber()
   @Min(0.01)
   activityValue: number;
@@ -17,7 +20,10 @@ export class CreateActivityDto {
   @IsNotEmpty()
   activityUnit: string;
 
-  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000', description: 'UUID of the applied emission factor' })
+  @ApiProperty({
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    description: 'UUID of the applied emission factor',
+  })
   @IsUUID()
   @IsNotEmpty()
   factorId: string;

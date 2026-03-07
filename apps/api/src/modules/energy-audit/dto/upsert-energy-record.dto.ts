@@ -1,4 +1,12 @@
-import { IsString, IsNumber, IsOptional, IsEnum, IsInt, IsUUID, IsNotEmpty } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsOptional,
+  IsEnum,
+  IsInt,
+  IsUUID,
+  IsNotEmpty,
+} from 'class-validator';
 import { EnergyRecordType } from '@prisma/client';
 
 export class UpsertEnergyRecordItemDto {

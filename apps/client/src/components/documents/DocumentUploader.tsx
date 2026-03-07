@@ -10,7 +10,7 @@ interface DocumentUploaderProps {
     onUploadSuccess?: () => void;
 }
 
-export const DocumentUploader: React.FC<DocumentUploaderProps> = ({ entityType: _entityType, entityId: _entityId, onUploadSuccess }) => {
+export const DocumentUploader: React.FC<DocumentUploaderProps> = ({ onUploadSuccess }) => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [status, setStatus] = useState<'IDLE' | 'HASHING' | 'UPLOADING' | 'CONFIRMING' | 'SUCCESS' | 'ERROR'>('IDLE');
@@ -60,7 +60,7 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({ entityType: 
 
             // STEP 3: Upload Directly to Blob Storage (Frontend to Azure/AWS directly)
             // Example of native XHR to track precise progress:
-            await new Promise<void>((resolve, _reject) => {
+            await new Promise<void>((resolve) => {
                 let currentProgress = 10;
                 
                 // MOCK UPLOAD PROGRESS
@@ -113,10 +113,11 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({ entityType: 
                 setTimeout(() => onUploadSuccess(), 1000);
             }
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Upload failed:', error);
             setStatus('ERROR');
-            setErrorMessage(error?.response?.data?.message || error?.message || 'Error desconocido al subir el documento.');
+            const err = error as { response?: { data?: { message?: string } }, message?: string };
+            setErrorMessage(err?.response?.data?.message || err?.message || 'Error desconocido al subir el documento.');
         }
     };
 

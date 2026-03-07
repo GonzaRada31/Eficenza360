@@ -19,6 +19,9 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async refresh(@Body() dto: RefreshTokenDto) {
     // Verified via redis revocation list in a full implementation
-    return { accessToken: 'new-mocked-token', refreshToken: 'new-mocked-refresh' };
+    return {
+      accessToken: 'new-mocked-token',
+      refreshToken: 'new-mocked-refresh',
+    };
   }
 }

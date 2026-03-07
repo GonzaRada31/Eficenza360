@@ -9,7 +9,10 @@ import DocumentIntelligence, {
 } from '@azure-rest/ai-document-intelligence';
 import { PollerLike, OperationState } from '@azure/core-lro';
 import { DefaultAzureCredential } from '@azure/identity';
-import { STORAGE_PROVIDER, type IStorageProvider } from '../../infra/storage/storage.provider.interface';
+import {
+  STORAGE_PROVIDER,
+  type IStorageProvider,
+} from '../../infra/storage/storage.provider.interface';
 
 @Injectable()
 export class AzureInvoiceService {
@@ -28,12 +31,19 @@ export class AzureInvoiceService {
   ): Promise<{ blobName: string; sasUrl: string }> {
     // ENFORCE TENANT ISOLATION
     if (!filename.startsWith(`${tenantId}/`)) {
-      throw new Error(`Security Alert: Upload filename '${filename}' must start with tenantId '${tenantId}'`);
+      throw new Error(
+        `Security Alert: Upload filename '${filename}' must start with tenantId '${tenantId}'`,
+      );
     }
 
     // Direct injection into storage module abstraction
-    const result = await this.storage.uploadFile(fileBuffer, filename.split('/').pop() || filename, mimeType, tenantId);
-    
+    const result = await this.storage.uploadFile(
+      fileBuffer,
+      filename.split('/').pop() || filename,
+      mimeType,
+      tenantId,
+    );
+
     return {
       blobName: result.blobName,
       sasUrl: result.sasUrl,

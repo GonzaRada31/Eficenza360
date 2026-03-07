@@ -9,12 +9,12 @@ export class DeadLetterService {
     const dlq = queues.deadLetter;
     // Bullmq considers failed or delayed as possible DLQ mechanisms for this queue
     const failed = await dlq.getFailed(0, limit);
-    return failed.map(job => ({
+    return failed.map((job) => ({
       id: job.id,
       name: job.name,
       failedReason: job.failedReason,
       data: job.data,
-      timestamp: job.timestamp
+      timestamp: job.timestamp,
     }));
   }
 
@@ -22,7 +22,7 @@ export class DeadLetterService {
     const dlq = queues.deadLetter;
     const job = await dlq.getJob(jobId);
     if (!job) throw new Error('Job not found in dead letter queue');
-    
+
     await job.retry();
     this.logger.log(`Manually retrying job ${jobId}`);
     return { success: true, jobId };

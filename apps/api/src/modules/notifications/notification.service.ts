@@ -8,8 +8,10 @@ export class NotificationService {
   constructor(private readonly prisma: PrismaService) {}
 
   async notifyTenantAdmin(tenantId: string, title: string, message: string) {
-    this.logger.log(`Dispatching Notification [${title}] to Tenant ${tenantId}`);
-    
+    this.logger.log(
+      `Dispatching Notification [${title}] to Tenant ${tenantId}`,
+    );
+
     // In a real system, you'd lookup users with 'Admin' role in this tenant first
     return this.prisma.notification.create({
       data: {
@@ -18,7 +20,7 @@ export class NotificationService {
         title,
         message,
         severity: 'INFO',
-      }
+      },
     });
   }
 
@@ -32,7 +34,7 @@ export class NotificationService {
         title: 'New Document Uploaded',
         message: `A new document "${documentName}" is awaiting review.`,
         severity: 'INFO',
-      }
+      },
     });
   }
 }

@@ -9,7 +9,13 @@ import { IamModule } from '../iam/iam.module';
 import { StorageModule } from '../../infra/storage/storage.module';
 
 @Module({
-  imports: [PrismaModule, ConfigModule, CarbonFootprintModule, IamModule, StorageModule],
+  imports: [
+    PrismaModule,
+    ConfigModule,
+    CarbonFootprintModule,
+    IamModule,
+    StorageModule,
+  ],
   controllers: [InvoiceController],
   providers: [AzureInvoiceService, InvoiceService],
   exports: [AzureInvoiceService, InvoiceService],

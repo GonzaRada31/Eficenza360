@@ -30,35 +30,37 @@ async function main() {
 
   console.log('Creating initial tenant and admin user...');
 
-  const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-    // 1. Create Tenant
-    const tenant = await tx.tenant.create({
-      data: {
-        name: tenantName,
-        commercialName: tenantName,
-        subscription: {
-          create: {
-            status: 'ACTIVE',
-            planType: 'ENTERPRISE',
+  const result = await prisma.$transaction(
+    async (tx: Prisma.TransactionClient) => {
+      // 1. Create Tenant
+      const tenant = await tx.tenant.create({
+        data: {
+          name: tenantName,
+          commercialName: tenantName,
+          subscription: {
+            create: {
+              status: 'ACTIVE',
+              planType: 'ENTERPRISE',
+            },
           },
         },
-      },
-    });
+      });
 
-    // 2. Create Admin User
-    const user = await tx.user.create({
-      data: {
-        email: email,
-        passwordHash: hashedPassword,
-        fullName: fullName,
-        role: 'ADMIN',
-        tenantId: tenant.id,
-        status: 'ACTIVE',
-      },
-    });
+      // 2. Create Admin User
+      const user = await tx.user.create({
+        data: {
+          email: email,
+          passwordHash: hashedPassword,
+          fullName: fullName,
+          role: 'ADMIN',
+          tenantId: tenant.id,
+          status: 'ACTIVE',
+        },
+      });
 
-    return { tenant, user };
-  });
+      return { tenant, user };
+    },
+  );
 
   console.log('Success!');
   console.log(`Tenant created: ${result.tenant.name} (${result.tenant.id})`);

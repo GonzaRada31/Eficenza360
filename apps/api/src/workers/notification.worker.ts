@@ -19,9 +19,13 @@ export const notificationWorker = QueueFactory.createWorker(
     if (await idempotency.hasProcessed(eventId, 'NotificationWorker')) return;
 
     if (eventType === 'USER_CREATED') {
-      await notifications.notifyTenantAdmin(tenantId, 'New User Joined', `${payload.email} joined your tenant workspace.`);
+      await notifications.notifyTenantAdmin(
+        tenantId,
+        'New User Joined',
+        `${payload.email} joined your tenant workspace.`,
+      );
     }
 
     await idempotency.markProcessed(eventId, 'NotificationWorker');
-  }
+  },
 );

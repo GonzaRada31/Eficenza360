@@ -1,5 +1,10 @@
 import { Prisma } from '@prisma/client';
-import { Injectable, NotFoundException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateEnergyAuditDto } from './dto/create-energy-audit.dto';
 import { UpsertEnergyRecordItemDto } from './dto/upsert-energy-record.dto';
@@ -42,7 +47,12 @@ export class EnergyAuditService {
   }
 
   // FIX PACK: Paginated records retrieval instead of bloated include
-  async getAuditRecords(tenantId: string, auditId: string, page: number = 1, limit: number = 50) {
+  async getAuditRecords(
+    tenantId: string,
+    auditId: string,
+    page: number = 1,
+    limit: number = 50,
+  ) {
     const skip = (page - 1) * limit;
 
     const [total, records] = await Promise.all([
@@ -68,29 +78,33 @@ export class EnergyAuditService {
     };
   }
 
-  // FIX PACK: OCC Applied to any mutation like status 
+  // FIX PACK: OCC Applied to any mutation like status
   async updateStatus(tenantId: string, auditId: string, status: AuditStatus) {
     const audit = await this.getAuditById(tenantId, auditId);
-    
+
     // Abstract Finite State Machine: Only allow certain logical leaps
     if (audit.status === AuditStatus.LOCKED) {
-      throw new BadRequestException('La auditoría está bloqueada y no puede modificarse.');
+      throw new BadRequestException(
+        'La auditoría está bloqueada y no puede modificarse.',
+      );
     }
 
     if (status === AuditStatus.VALIDATED) {
-      throw new BadRequestException('La validación debe ejecutarse mediante el proceso de deep freeze (validateAudit).');
+      throw new BadRequestException(
+        'La validación debe ejecutarse mediante el proceso de deep freeze (validateAudit).',
+      );
     }
 
     // OCC Patrón estricto
     const result = await this.prisma.energyAudit.updateMany({
-      where: { 
+      where: {
         id: audit.id,
         tenantId,
-        version: audit.version
+        version: audit.version,
       },
-      data: { 
+      data: {
         status,
-        version: { increment: 1 } 
+        version: { increment: 1 },
       },
     });
 
@@ -105,131 +119,152 @@ export class EnergyAuditService {
   async validateAudit(tenantId: string, auditId: string) {
     const audit = await this.getAuditById(tenantId, auditId);
 
-    if (audit.status === AuditStatus.VALIDATED || audit.status === AuditStatus.LOCKED) {
-        throw new BadRequestException('Operación no permitida en este estado.');
+    if (
+      audit.status === AuditStatus.VALIDATED ||
+      audit.status === AuditStatus.LOCKED
+    ) {
+      throw new BadRequestException('Operación no permitida en este estado.');
     }
 
     // Interactive Transaction con Timeout adaptado a bulk processing (15s máximo seguro)
-    return this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-      // 1. OCC Lock on Audit
-      const auditUpdate = await tx.energyAudit.updateMany({
-        where: { id: auditId, tenantId, version: audit.version },
-        data: { status: AuditStatus.VALIDATED, version: { increment: 1 } }
-      });
+    return this.prisma.$transaction(
+      async (tx: Prisma.TransactionClient) => {
+        // 1. OCC Lock on Audit
+        const auditUpdate = await tx.energyAudit.updateMany({
+          where: { id: auditId, tenantId, version: audit.version },
+          data: { status: AuditStatus.VALIDATED, version: { increment: 1 } },
+        });
 
-      if (auditUpdate.count === 0) {
-        throw new OCCConflictException('EnergyAudit', auditId);
-      }
-
-      // 2. Create Parent Snapshot
-      const snapshot = await tx.energyAuditSnapshot.create({
-        data: {
-          tenantId,
-          originalAuditId: audit.id,
-          auditName: audit.name,
-          auditYear: audit.year,
+        if (auditUpdate.count === 0) {
+          throw new OCCConflictException('EnergyAudit', auditId);
         }
-      });
 
-      // 3. Obtener el monto total de registros antes de iterar para validación forense
-      const totalRecords = await tx.energyRecord.count({
-        where: { auditId, tenantId, deletedAt: null }
-      });
-
-      if (totalRecords > 0) {
-        const CHUNK_SIZE = 500;
-        let lastId: string | undefined = undefined;
-        let recordsProcessed = 0;
-
-        // 4. Cursor-Based Pagination Loop.
-        // Mientras existan registros pendientes por procesar, itera consultando de a CHUNK_SIZE.
-        while (recordsProcessed < totalRecords) {
-          // Búsqueda del lote. Desvinculamos datos innecesarios a Memoria (Sin spread completo)
-          const recordsChunk: any = await tx.energyRecord.findMany({
-            where: { auditId, tenantId, deletedAt: null },
-            take: CHUNK_SIZE,
-            skip: lastId ? 1 : 0,
-            cursor: lastId ? { id: lastId } : undefined,
-            orderBy: { id: 'asc' }, // Index ordenado obligatorio pre-generado por el UUID default
-            select: {
-              id: true,
-              recordType: true,
-              category: true,
-              consumptionValue: true,
-              unit: true,
-              cost: true,
-              emissionFactor: {
-                select: {
-                  factorValue: true,
-                  source: true,
-                }
-              }
-            }
-          });
-
-          if (recordsChunk.length === 0) break; // Fallback loop defense
-
-          lastId = recordsChunk[recordsChunk.length - 1].id;
-
-          // Inyección Bulk del Lote exacto
-          await tx.energyAuditSnapshotRecord.createMany({
-            data: recordsChunk.map((r: any) => ({
-              snapshotId: snapshot.id,
-              originalRecordId: r.id,
-              recordType: r.recordType,
-              category: r.category,
-              consumptionValue: r.consumptionValue,
-              unit: r.unit,
-              cost: r.cost,
-              appliedEmissionFactorValue: r.emissionFactor?.factorValue,
-              appliedEmissionFactorSource: r.emissionFactor?.source,
-            }))
-          });
-
-          recordsProcessed += recordsChunk.length;
-
-          // Garbage Collection: El array local resourcesChunk pierde su referencia en el ciclo 'while', 
-          // permitiendo que el V8 (Node.js) limpie esa memoria de los maps anteriores. No hay acumulación.
-        }
-      }
-
-      // 5. Insertar DomainEventOutbox (status = PENDING)
-      const eventId = crypto.randomUUID();
-      await tx.domainEventOutbox.create({
-        data: {
-          tenantId,
-          eventType: 'ENERGY_AUDIT_VALIDATED',
-          payload: {
-            eventId,
+        // 2. Create Parent Snapshot
+        const snapshot = await tx.energyAuditSnapshot.create({
+          data: {
             tenantId,
-            auditId,
-            snapshotId: snapshot.id,
-            companyId: audit.companyId,
-            year: audit.year,
-            validatedAt: new Date().toISOString(),
-            normativaVersion: 'v1'
+            originalAuditId: audit.id,
+            auditName: audit.name,
+            auditYear: audit.year,
           },
-          status: OutboxStatus.PENDING,
-          retryCount: 0,
-        }
-      });
+        });
 
-      return { snapshotId: snapshot.id, status: AuditStatus.VALIDATED, recordsCloned: totalRecords };
-    }, { timeout: 15000 }); // Ampliación controlada de timeout por la latencia en inserción masiva.
+        // 3. Obtener el monto total de registros antes de iterar para validación forense
+        const totalRecords = await tx.energyRecord.count({
+          where: { auditId, tenantId, deletedAt: null },
+        });
+
+        if (totalRecords > 0) {
+          const CHUNK_SIZE = 500;
+          let lastId: string | undefined = undefined;
+          let recordsProcessed = 0;
+
+          // 4. Cursor-Based Pagination Loop.
+          // Mientras existan registros pendientes por procesar, itera consultando de a CHUNK_SIZE.
+          while (recordsProcessed < totalRecords) {
+            // Búsqueda del lote. Desvinculamos datos innecesarios a Memoria (Sin spread completo)
+            const recordsChunk: any = await tx.energyRecord.findMany({
+              where: { auditId, tenantId, deletedAt: null },
+              take: CHUNK_SIZE,
+              skip: lastId ? 1 : 0,
+              cursor: lastId ? { id: lastId } : undefined,
+              orderBy: { id: 'asc' }, // Index ordenado obligatorio pre-generado por el UUID default
+              select: {
+                id: true,
+                recordType: true,
+                category: true,
+                consumptionValue: true,
+                unit: true,
+                cost: true,
+                emissionFactor: {
+                  select: {
+                    factorValue: true,
+                    source: true,
+                  },
+                },
+              },
+            });
+
+            if (recordsChunk.length === 0) break; // Fallback loop defense
+
+            lastId = recordsChunk[recordsChunk.length - 1].id;
+
+            // Inyección Bulk del Lote exacto
+            await tx.energyAuditSnapshotRecord.createMany({
+              data: recordsChunk.map((r: any) => ({
+                snapshotId: snapshot.id,
+                originalRecordId: r.id,
+                recordType: r.recordType,
+                category: r.category,
+                consumptionValue: r.consumptionValue,
+                unit: r.unit,
+                cost: r.cost,
+                appliedEmissionFactorValue: r.emissionFactor?.factorValue,
+                appliedEmissionFactorSource: r.emissionFactor?.source,
+              })),
+            });
+
+            recordsProcessed += recordsChunk.length;
+
+            // Garbage Collection: El array local resourcesChunk pierde su referencia en el ciclo 'while',
+            // permitiendo que el V8 (Node.js) limpie esa memoria de los maps anteriores. No hay acumulación.
+          }
+        }
+
+        // 5. Insertar DomainEventOutbox (status = PENDING)
+        const eventId = crypto.randomUUID();
+        await tx.domainEventOutbox.create({
+          data: {
+            tenantId,
+            eventType: 'ENERGY_AUDIT_VALIDATED',
+            payload: {
+              eventId,
+              tenantId,
+              auditId,
+              snapshotId: snapshot.id,
+              companyId: audit.companyId,
+              year: audit.year,
+              validatedAt: new Date().toISOString(),
+              normativaVersion: 'v1',
+            },
+            status: OutboxStatus.PENDING,
+            retryCount: 0,
+          },
+        });
+
+        return {
+          snapshotId: snapshot.id,
+          status: AuditStatus.VALIDATED,
+          recordsCloned: totalRecords,
+        };
+      },
+      { timeout: 15000 },
+    ); // Ampliación controlada de timeout por la latencia en inserción masiva.
   }
 
   // OCC Strategy Executed
-  async upsertRecord(tenantId: string, auditId: string, dto: UpsertEnergyRecordItemDto) {
+  async upsertRecord(
+    tenantId: string,
+    auditId: string,
+    dto: UpsertEnergyRecordItemDto,
+  ) {
     // Verify Audit is not Validated or Locked
     const audit = await this.getAuditById(tenantId, auditId);
-    if (audit.status === AuditStatus.VALIDATED || audit.status === AuditStatus.LOCKED) {
-      throw new BadRequestException('Auditoría validada/cerrada. Sus registros son inmutables (Deep Freeze).');
+    if (
+      audit.status === AuditStatus.VALIDATED ||
+      audit.status === AuditStatus.LOCKED
+    ) {
+      throw new BadRequestException(
+        'Auditoría validada/cerrada. Sus registros son inmutables (Deep Freeze).',
+      );
     }
 
     if (dto.id) {
       // UPDATE BRANCH (with OCC and tenantId in DB query)
       if (dto.version === undefined) {
-          throw new BadRequestException('Actualizaciones requieren proporcionar la current version (OCC)');
+        throw new BadRequestException(
+          'Actualizaciones requieren proporcionar la current version (OCC)',
+        );
       }
 
       const result = await this.prisma.energyRecord.updateMany({
@@ -255,23 +290,25 @@ export class EnergyAuditService {
         throw new OCCConflictException('EnergyRecord', dto.id);
       }
 
-      return this.prisma.energyRecord.findFirst({ where: { id: dto.id, tenantId } });
+      return this.prisma.energyRecord.findFirst({
+        where: { id: dto.id, tenantId },
+      });
     } else {
-       // CREATE BRANCH
-       return this.prisma.energyRecord.create({
-         data: {
-           tenantId,
-           auditId,
-           recordType: dto.recordType,
-           category: dto.category,
-           consumptionValue: dto.consumptionValue,
-           unit: dto.unit,
-           cost: dto.cost,
-           evidenceUrl: dto.evidenceUrl,
-           emissionFactorId: dto.emissionFactorId,
-           deduplicationKey: dto.deduplicationKey,
-         },
-       });
+      // CREATE BRANCH
+      return this.prisma.energyRecord.create({
+        data: {
+          tenantId,
+          auditId,
+          recordType: dto.recordType,
+          category: dto.category,
+          consumptionValue: dto.consumptionValue,
+          unit: dto.unit,
+          cost: dto.cost,
+          evidenceUrl: dto.evidenceUrl,
+          emissionFactorId: dto.emissionFactorId,
+          deduplicationKey: dto.deduplicationKey,
+        },
+      });
     }
   }
 }

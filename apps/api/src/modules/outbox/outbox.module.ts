@@ -4,6 +4,6 @@ import { OutboxRelayWorker } from './outbox.relay.worker';
 
 @Module({
   providers: [OutboxService, OutboxRelayWorker],
-  exports: [OutboxService]
+  exports: [OutboxService],
 })
 export class OutboxModule {}

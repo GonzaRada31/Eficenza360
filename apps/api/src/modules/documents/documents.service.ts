@@ -3,7 +3,10 @@ import { Injectable, NotFoundException, Inject } from '@nestjs/common';
 import { PrismaService } from '../../infra/prisma/prisma.service';
 import type { IStorageProvider } from '../../infra/storage/storage.provider.interface';
 import { STORAGE_PROVIDER } from '../../infra/storage/storage.provider.interface';
-import { getTenantId, getCurrentUserId } from '../../infra/context/tenant.context';
+import {
+  getTenantId,
+  getCurrentUserId,
+} from '../../infra/context/tenant.context';
 import { PresignDocumentDto, CreateDocumentDto } from './dto/document.dto';
 
 @Injectable()
@@ -15,8 +18,8 @@ export class DocumentsService {
 
   async generatePresignedUrl(dto: PresignDocumentDto) {
     const tenantId = getTenantId();
-    if (!tenantId) throw new Error("Tenant Context Missing");
-    
+    if (!tenantId) throw new Error('Tenant Context Missing');
+
     // Using Azure abstraction generate format ensuring tenantId isolation directly in the service
     const blobName = `${tenantId}/${Date.now()}-${dto.fileName}`;
     const url = await this.storage.generatePresignedUrl(blobName, tenantId);
@@ -27,7 +30,7 @@ export class DocumentsService {
     const tenantId = getTenantId();
     const userId = getCurrentUserId();
 
-    if (!tenantId) throw new Error("Tenant Context Missing");
+    if (!tenantId) throw new Error('Tenant Context Missing');
 
     return this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Create Base Document
@@ -37,7 +40,7 @@ export class DocumentsService {
           name: dto.name,
           category: dto.category || 'UNCATEGORIZED',
           createdAt: new Date(),
-        }
+        },
       });
 
       // Create Version 1 linked to S3
@@ -50,7 +53,7 @@ export class DocumentsService {
           sizeBytes: dto.size,
           status: 'AVAILABLE',
           uploadedBy: userId,
-        }
+        },
       });
 
       // Emit Domain Event
@@ -60,8 +63,12 @@ export class DocumentsService {
           aggregateType: 'Document',
           aggregateId: document.id,
           eventType: 'DOCUMENT_UPLOADED',
-          payload: { documentId: document.id, s3Key: dto.s3Key, size: dto.size }
-        }
+          payload: {
+            documentId: document.id,
+            s3Key: dto.s3Key,
+            size: dto.size,
+          },
+        },
       });
 
       return document;
@@ -69,26 +76,33 @@ export class DocumentsService {
   }
 
   async findOne(id: string) {
-    const document = await (this.prisma.tenantClient as any).document.findUnique({
+    const document = await (
+      this.prisma.tenantClient as any
+    ).document.findUnique({
       where: { id },
       include: {
         versions: true,
-      }
+      },
     });
 
     if (!document) throw new NotFoundException('Document not found');
 
-    const activeVersion = document.versions.sort((a: any, b: any) => b.version - a.version)[0];
+    const activeVersion = document.versions.sort(
+      (a: any, b: any) => b.version - a.version,
+    )[0];
     let downloadUrl = null;
 
     if (activeVersion && activeVersion.blobUrl) {
-      downloadUrl = await this.storage.generatePresignedUrl(activeVersion.blobUrl, activeVersion.documentId?.tenantId || '');
+      downloadUrl = await this.storage.generatePresignedUrl(
+        activeVersion.blobUrl,
+        activeVersion.documentId?.tenantId || '',
+      );
     }
 
     return {
       ...document,
       activeVersion,
-      downloadUrl
+      downloadUrl,
     };
   }
 }

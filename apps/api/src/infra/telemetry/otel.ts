@@ -12,7 +12,8 @@ const exporter = new PrometheusExporter({
 
 export const otelSDK = new NodeSDK({
   resource: new Resource({
-    [SemanticResourceAttributes.SERVICE_NAME]: 'eficenza-api-enterprise',
+    [SemanticResourceAttributes.SERVICE_NAME]:
+      process.env.OTEL_SERVICE_NAME || 'eficenza-api-enterprise',
     [SemanticResourceAttributes.SERVICE_VERSION]: '1.0.0',
   }),
   metricReader: exporter,
@@ -24,12 +25,19 @@ export const otelSDK = new NodeSDK({
   ],
 });
 
-// Starts the SDK
-otelSDK.start();
+// Starts the SDK conditionally
+if (process.env.OTEL_ENABLED === 'true') {
+  otelSDK.start();
+}
 
 process.on('SIGTERM', () => {
-  otelSDK.shutdown()
-    .then(() => console.log('Tracing terminated'))
-    .catch((error) => console.log('Error terminating tracing', error))
-    .finally(() => process.exit(0));
+  if (process.env.OTEL_ENABLED === 'true') {
+    otelSDK
+      .shutdown()
+      .then(() => console.log('Tracing terminated'))
+      .catch((error) => console.log('Error terminating tracing', error))
+      .finally(() => process.exit(0));
+  } else {
+    process.exit(0);
+  }
 });

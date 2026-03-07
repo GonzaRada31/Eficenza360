@@ -9,8 +9,8 @@ const PreferenceRow = ({ icon, label, description, field, inApp, email, handleTo
     label: string, 
     description: string, 
     field: string,
-    inApp: any,
-    email: any,
+    inApp: Record<string, boolean>,
+    email: Record<string, boolean>,
     handleToggle: (channel: 'inApp' | 'email', field: string) => void,
     isUpdating: boolean
 }) => (
@@ -67,7 +67,7 @@ export const NotificationPreferencesPage = () => {
     const { inApp, email } = preferences;
 
     const handleToggle = (channel: 'inApp' | 'email', field: string) => {
-        const currentData = preferences[channel] as any;
+        const currentData = preferences[channel] as Record<string, boolean>;
         const payload = {
             [channel]: {
                 ...currentData,

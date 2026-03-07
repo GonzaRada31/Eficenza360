@@ -1,6 +1,15 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+  Logger,
+} from '@nestjs/common';
 import { Observable, tap } from 'rxjs';
-import { getTenantId, getCurrentUserId } from '../../infra/context/tenant.context';
+import {
+  getTenantId,
+  getCurrentUserId,
+} from '../../infra/context/tenant.context';
 
 @Injectable()
 export class AuditLogInterceptor implements NestInterceptor {
@@ -25,16 +34,20 @@ export class AuditLogInterceptor implements NestInterceptor {
       tap({
         next: (val) => {
           // Log SUCCESS
-          this.logger.log(`[AUDIT] Action: ${method} ${url} | Tenant: ${tenantId} | User: ${userId} | Status: SUCCESS`);
-          
+          this.logger.log(
+            `[AUDIT] Action: ${method} ${url} | Tenant: ${tenantId} | User: ${userId} | Status: SUCCESS`,
+          );
+
           // In full implementation, this will emit a DomainEvent or directly save to Prisma `AuditLog` table
           // via a background queue to ensure minimal performance impact on the request.
         },
         error: (err) => {
           // Log FAILURE
-          this.logger.error(`[AUDIT] Action: ${method} ${url} | Tenant: ${tenantId} | User: ${userId} | Status: FAILED | Error: ${err.message}`);
-        }
-      })
+          this.logger.error(
+            `[AUDIT] Action: ${method} ${url} | Tenant: ${tenantId} | User: ${userId} | Status: FAILED | Error: ${err.message}`,
+          );
+        },
+      }),
     );
   }
 }

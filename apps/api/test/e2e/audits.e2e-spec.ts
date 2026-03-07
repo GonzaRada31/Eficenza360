@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../../src/app.module';
 
-// Simplified E2E Test Skeleton. In a real environment, 
+// Simplified E2E Test Skeleton. In a real environment,
 // this would use a dedicated test DB and test AuthTokens.
 describe('AuditsController (e2e)', () => {
   let app: INestApplication;
