@@ -1,0 +1,135 @@
+--progress is a global compose flag, better use `docker compose --progress xx build ...
+time="2026-03-07T01:36:43-03:00" level=warning msg="The \"DATABASE_URL\" variable is not set. Defaulting to a blank string."
+time="2026-03-07T01:36:43-03:00" level=warning msg="The \"JWT_SECRET\" variable is not set. Defaulting to a blank string."
+time="2026-03-07T01:36:43-03:00" level=warning msg="The \"AZURE_STORAGE_CONNECTION_STRING\" variable is not set. Defaulting to a blank string."
+time="2026-03-07T01:36:43-03:00" level=warning msg="The \"OTEL_EXPORTER_OTLP_ENDPOINT\" variable is not set. Defaulting to a blank string."
+time="2026-03-07T01:36:43-03:00" level=warning msg="C:\\Users\\Gonza\\.gemini\\antigravity\\scratch\\eficenza360\\docker-compose.prod.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.09kB done
+#1 DONE 0.0s
+
+#2 [api internal] load build definition from Dockerfile.api
+#2 transferring dockerfile: 1.40kB done
+#2 DONE 0.0s
+
+#3 [web internal] load build definition from Dockerfile.web
+#3 transferring dockerfile: 1.32kB done
+#3 DONE 0.0s
+
+#4 [web internal] load metadata for docker.io/library/node:20-alpine
+#4 ...
+
+#5 [web internal] load metadata for docker.io/library/nginx:alpine
+#5 DONE 0.8s
+
+#4 [web internal] load metadata for docker.io/library/node:20-alpine
+#4 DONE 0.8s
+
+#6 [web internal] load .dockerignore
+#6 transferring context: 132B done
+#6 DONE 0.0s
+
+#7 [api builder 1/9] FROM docker.io/library/node:20-alpine@sha256:b88333c42c23fbd91596ebd7fd10de239cedab9617de04142dde7315e3bc0afa
+#7 resolve docker.io/library/node:20-alpine@sha256:b88333c42c23fbd91596ebd7fd10de239cedab9617de04142dde7315e3bc0afa 0.0s done
+#7 DONE 0.0s
+
+#8 [web runner 1/4] FROM docker.io/library/nginx:alpine@sha256:1d13701a5f9f3fb01aaa88cef2344d65b6b5bf6b7d9fa4cf0dca557a8d7702ba
+#8 resolve docker.io/library/nginx:alpine@sha256:1d13701a5f9f3fb01aaa88cef2344d65b6b5bf6b7d9fa4cf0dca557a8d7702ba 0.0s done
+#8 DONE 0.0s
+
+#9 [web internal] load build context
+#9 transferring context: 107.40kB 0.1s done
+#9 transferring context: 107.40kB 0.1s done
+#9 DONE 0.1s
+
+#10 [web runner 3/4] COPY --from=builder /app/apps/client/dist /usr/share/nginx/html
+#10 CACHED
+
+#11 [web builder 8/8] RUN npm run build --workspace=apps/client
+#11 CACHED
+
+#12 [web runner 2/4] RUN rm -rf /usr/share/nginx/html/*
+#12 CACHED
+
+#13 [web runner 4/4] RUN echo 'server {     listen       80;     server_name  localhost;     location / {     root   /usr/share/nginx/html;     index  index.html index.htm;     try_files $uri $uri/ /index.html;     }     }' > /etc/nginx/conf.d/default.conf
+#13 CACHED
+
+#14 [api builder 9/9] RUN npm run build --workspace=apps/api
+#14 CACHED
+
+#15 [api builder 5/9] COPY apps/api ./apps/api/
+#15 CACHED
+
+#16 [api runner  6/11] COPY --from=builder --chown=nestjs:nodejs /app/package.json ./
+#16 CACHED
+
+#17 [api runner  7/11] COPY --from=builder --chown=nestjs:nodejs /app/node_modules ./node_modules
+#17 CACHED
+
+#18 [api builder 2/9] WORKDIR /app
+#18 CACHED
+
+#19 [api runner  8/11] COPY --from=builder --chown=nestjs:nodejs /app/apps/api/node_modules ./apps/api/node_modules
+#19 CACHED
+
+#20 [api builder 3/9] RUN corepack enable
+#20 CACHED
+
+#21 [api runner  3/11] RUN apk add --no-cache openssl
+#21 CACHED
+
+#22 [api builder 8/9] RUN cd apps/api && npx prisma generate
+#22 CACHED
+
+#23 [api builder 6/9] COPY apps/client ./apps/client/
+#23 CACHED
+
+#24 [api builder 4/9] COPY package.json package-lock.json turbo.json ./
+#24 CACHED
+
+#25 [api builder 7/9] RUN npm ci
+#25 CACHED
+
+#26 [api runner 10/11] COPY --from=builder --chown=nestjs:nodejs /app/apps/api/package.json ./apps/api/
+#26 CACHED
+
+#27 [api runner  5/11] RUN adduser --system --uid 1001 nestjs
+#27 CACHED
+
+#28 [api runner  4/11] RUN addgroup --system --gid 1001 nodejs
+#28 CACHED
+
+#29 [api runner  9/11] COPY --from=builder --chown=nestjs:nodejs /app/apps/api/dist ./apps/api/dist
+#29 CACHED
+
+#30 [api runner 11/11] COPY --from=builder --chown=nestjs:nodejs /app/apps/api/prisma ./apps/api/prisma
+#30 CACHED
+
+#31 [api] exporting to image
+#31 exporting layers done
+#31 exporting manifest sha256:5d993f9f1109f2e89ce280beefd6ab4492fde65e48cfcc0a82fff2f01af2fdf4 done
+#31 exporting config sha256:7c4943448c71f3dad9b8f93d15e8486d5a0f1a7d430b6a261994e12344c87d5f done
+#31 exporting attestation manifest sha256:0d517bdae6af47d2d1f6e7de1c9f92bd05f8cff581b81bd71e2a03680192293e 0.0s done
+#31 exporting manifest list sha256:6a0881b6867331fe6a356f0ac8f4dade89af74ebc4b5865690130b1dcab7db72
+#31 exporting manifest list sha256:6a0881b6867331fe6a356f0ac8f4dade89af74ebc4b5865690130b1dcab7db72 0.0s done
+#31 naming to docker.io/library/eficenza360-api:latest done
+#31 unpacking to docker.io/library/eficenza360-api:latest 0.0s done
+#31 DONE 0.2s
+
+#32 [web] exporting to image
+#32 exporting layers done
+#32 exporting manifest sha256:275b4a52cfa35298e2b8ad1855d3f7ea6ed3e8366ac3e15f8c49cca1feaf924c done
+#32 exporting config sha256:3c1c5e70f96821a1a0cc2ee65c521404214e28d85d0f3ef2c5051f5eb89049ee done
+#32 exporting attestation manifest sha256:567f29e7384d931b5f777cd52c282e24407cbfcff5863aa55760618da9bf4e3b 0.0s done
+#32 exporting manifest list sha256:21676a76c25259177f6fc78349c03c88459d5d684d2118021d943df51355208c 0.0s done
+#32 naming to docker.io/library/eficenza360-web:latest done
+#32 unpacking to docker.io/library/eficenza360-web:latest 0.0s done
+#32 DONE 0.1s
+
+#33 [web] resolving provenance for metadata file
+#33 DONE 0.0s
+
+#34 [api] resolving provenance for metadata file
+#34 DONE 0.0s
+ eficenza360-web:latest  Built
+ eficenza360-api:latest  Built

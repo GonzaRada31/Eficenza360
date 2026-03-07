@@ -1,0 +1,77 @@
+name: Azure Cloud Deployment
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch: # Enable manual triggers
+
+env:
+  ACR_NAME: eficenza360registry
+  ACA_ENV: eficenza360-env
+  RG_NAME: eficenza360-prod-rg
+  API_APP_NAME: eficenza360-api
+  WEB_APP_NAME: eficenza360-web
+
+jobs:
+  docker-build-push:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+        
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    # - name: Azure Login
+    #   uses: azure/login@v1
+    #   with:
+    #     creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    # - name: ACR Login
+    #   run: az acr login --name ${{ env.ACR_NAME }}
+        
+    - name: Build API Image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: docker/Dockerfile.api
+        push: false # Change to true when ACR is ready
+        tags: ${{ env.ACR_NAME }}.azurecr.io/${{ env.API_APP_NAME }}:${{ github.sha }}
+        cache-from: type=registry,ref=${{ env.ACR_NAME }}.azurecr.io/${{ env.API_APP_NAME }}:buildcache
+        cache-to: type=registry,ref=${{ env.ACR_NAME }}.azurecr.io/${{ env.API_APP_NAME }}:buildcache,mode=max
+        
+    - name: Build Web Image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: docker/Dockerfile.web
+        push: false # Change to true when ACR is ready
+        tags: ${{ env.ACR_NAME }}.azurecr.io/${{ env.WEB_APP_NAME }}:${{ github.sha }}
+        cache-from: type=registry,ref=${{ env.ACR_NAME }}.azurecr.io/${{ env.WEB_APP_NAME }}:buildcache
+        cache-to: type=registry,ref=${{ env.ACR_NAME }}.azurecr.io/${{ env.WEB_APP_NAME }}:buildcache,mode=max
+
+  deploy-to-aca:
+    needs: docker-build-push
+    runs-on: ubuntu-latest
+    if: false # DISABLED UNTIL INFRASTRUCTURE IS READY AND REVIEWED
+    
+    steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Deploy API to Container Apps
+      uses: azure/container-apps-deploy-action@v1
+      with:
+        resourceGroup: ${{ env.RG_NAME }}
+        containerAppName: ${{ env.API_APP_NAME }}
+        imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/${{ env.API_APP_NAME }}:${{ github.sha }}
+
+    - name: Deploy Web to Container Apps
+      uses: azure/container-apps-deploy-action@v1
+      with:
+        resourceGroup: ${{ env.RG_NAME }}
+        containerAppName: ${{ env.WEB_APP_NAME }}
+        imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/${{ env.WEB_APP_NAME }}:${{ github.sha }}

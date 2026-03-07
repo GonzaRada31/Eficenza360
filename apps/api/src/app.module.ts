@@ -12,6 +12,7 @@ import { ActivityDataModule } from './modules/activity-data/activity-data.module
 import { CarbonFootprintModule } from './modules/carbon-footprint/carbon-footprint.module';
 import { AttachmentsModule } from './modules/attachments/attachments.module';
 import { EnergyAuditModule } from './modules/energy-audit/energy-audit.module';
+import { HealthModule } from './modules/health/health.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { EnergyAuditModule } from './modules/energy-audit/energy-audit.module';
     CarbonFootprintModule,
     AttachmentsModule,
     EnergyAuditModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
